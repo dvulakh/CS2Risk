@@ -117,9 +117,15 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	public void keyTyped(KeyEvent arg0) {}
 
 	/*** Mouse Response ***/
+	public void printCoords(){
+		double[] locs = {0, 0};
+		locs[0] = (double)(getMousePosition().getX() - imgCorner[0]) / imgDim[0];
+		locs[1] = (double)(getMousePosition().getX() - imgCorner[1]) / imgDim[1];
+		JOptionPane.showMessageDialog(this, locs[0] + "     " + locs[1]);
+	}
 	public void mouseDragged(MouseEvent arg0) {}
 	public void mouseMoved(MouseEvent arg0) {}
-	public void mouseClicked(MouseEvent arg0) {}
+	public void mouseClicked(MouseEvent arg0) {printCoords();}
 	public void mouseEntered(MouseEvent arg0) {}
 	public void mouseExited(MouseEvent arg0) {}
 	public void mousePressed(MouseEvent arg0) {}

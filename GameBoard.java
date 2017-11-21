@@ -1,6 +1,8 @@
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
+import javax.imageio.*;
 import javax.swing.*;
 
 public class GameBoard extends JFrame implements MouseListener, MouseMotionListener, KeyListener, WindowListener {
@@ -11,6 +13,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	public static final String[] TERRITORY_NAMES = {"Alaska", "Alberta", "Central America", "Eastern United States", "Greenland", "Northwest Territory", "Ontario", "Quebec", "Western United States", "Argentina", "Brazil", "Peru", "Venezuela", "Great Britain", "Iceland", "Northern Europe", "Scandinavia", "Southern Europe", "Ukraine", "Western Europe", "Congo", "East Africa", "Egypt", "Madagascar", "North Africa", "South Africa", "Afghanistan", "China", "India", "Irkutsk", "Japan", "Kamchatka", "Middle East", "Mongolia", "Siam", "Siberia", "Ural", "Yakutsk", "Eastern Australia", "Indonesia", "New Guinea", "Western Australia"};
 	public static final boolean[][] ADJACENCY = {};
 	public static final double[] LOCATIONS = {};
+	public static final double MAP_HEIGHT = 0.85;
 	
 	/*** Color Scheme ***/
 	public static final Color MAIN = Color.BLACK;
@@ -22,58 +25,73 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	private BoardState state;
 	//Image
 	private int[] imgCorner;
-	private JLabel imgPanel;
-	private ImageIcon img;
 	private int[] imgDim;
+	private Image img;
 	//Controls
+	private JPanel bottomControls;
+	private JPanel sideControls;
 	private JPanel playerStats;
-	private JPanel controls;
 	
 	/*** Constructor ***/
-	public GameBoard() {
+	public GameBoard() throws IOException {
 		
 		//Set Up window
 		super(NAME);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
+		getContentPane().setBackground(MAIN);
+		setLayout(new FlowLayout());
 		setVisible(true);
-		setLayout(null);
-		
-		//Add controls
-		playerStats = new JPanel(new BorderLayout(BoardState.MAX_PLAYER, 1));
-		controls = new JPanel();
-		this.add(playerStats);
-		this.add(controls);
-		playerStats.setBackground(Color.BLACK);
-		controls.setBackground(Color.BLACK);
 		
 		//Set up image
 		imgCorner = new int[2];
 		imgDim = new int[2];
-		imgPanel = new JLabel();
-		img = new ImageIcon("Risk-Map.png");
-		imgDim[1] = getHeight();
-		imgDim[0] = imgDim[1] * img.getIconWidth() / img.getIconWidth();
-		imgCorner[0] = (getWidth() - imgDim[0]) / 2;
-		imgCorner[1] = 0;
-		imgPanel.setBounds(imgCorner[0], imgCorner[1], imgCorner[0] + imgDim[0], imgCorner[1] + imgDim[1]);
-		imgPanel.setIcon(img);
-		add(imgPanel);
+		try{
+			img = ImageIO.read(new File("src/Risk-Map.png"));
+			imgDim[1] = (int)(MAP_HEIGHT * (getHeight() - getInsets().top));
+			imgDim[0] = imgDim[1] * img.getWidth(null) / img.getHeight(null);
+			imgCorner[0] = (getWidth() - imgDim[0]) / 2;
+			imgCorner[1] = getInsets().top;
+		}catch(IIOException e){
+			JOptionPane.showMessageDialog(this, "Error reading map");
+			imgDim[1] = getHeight();
+			imgDim[0] = 3 * getWidth() / 5;
+			imgCorner[0] = (getWidth() - imgDim[0]) / 2;
+			imgCorner[1] = 0;
+		}
+		
+		//Add controls
+		playerStats = new JPanel();
+		sideControls = new JPanel();
+		bottomControls = new JPanel();
+		this.add(playerStats);
+		this.add(sideControls);
+		this.add(bottomControls);
+		playerStats.setBackground(Color.RED);
+		sideControls.setBackground(Color.GREEN);
+		bottomControls.setBackground(Color.BLUE);
+		playerStats.setBounds(0, 0, (getWidth() - imgDim[0]) / 2, getHeight());
+		sideControls.setBounds((getWidth() - imgDim[0]) / 2 + imgDim[0], 0, (getWidth() - imgDim[0]) / 2, getHeight());
+		bottomControls.setBounds((getWidth() - imgDim[0]) / 2, imgDim[1], imgDim[0], getHeight() - imgDim[1]);
 		
 		//Listeners
 		addMouseMotionListener(this);
 		addMouseListener(this);
 		addKeyListener(this);
+		paint(getGraphics());
 		
 	}
 	
 	/*** Draw ***/
+	public void repaint(){paint(getGraphics());}
 	public void paint(Graphics g){
-		super.paint(g);
-		imgPanel.paint(g);
-		controls.paint(g);
-		playerStats.paint(g);
-		//state.paint(g);
+		try{
+			super.paint(g);
+			g.drawImage(img, imgCorner[0], imgCorner[1], imgDim[0], imgDim[1], MAIN, null);
+			sideControls.paint(g);
+			playerStats.paint(g);
+			//state.paint(g);
+		}catch(Exception e){}
 	}
 	
 	/*** Accessors & Mutators ***/

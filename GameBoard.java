@@ -44,13 +44,14 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		setVisible(true);
 		
 		//Set up image
+		try{Thread.sleep(100);}catch(Exception e){}
 		imgCorner = new int[2];
 		imgDim = new int[2];
 		try{
 			img = ImageIO.read(new File("src/Risk-Map.png"));
 			imgDim[1] = (int)(MAP_HEIGHT * (getHeight() - getInsets().top));
 			imgDim[0] = imgDim[1] * img.getWidth(null) / img.getHeight(null);
-			imgCorner[0] = (getWidth() - imgDim[0]) / 2;
+			imgCorner[0] = (getWidth() + getInsets().left + getInsets().right - imgDim[0]) / 2;
 			imgCorner[1] = getInsets().top;
 		}catch(IIOException e){
 			JOptionPane.showMessageDialog(this, "Error reading map");
@@ -83,6 +84,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	}
 	
 	/*** Draw ***/
+	public void paintComponent(Graphics g){paint(g);}
 	public void repaint(){paint(getGraphics());}
 	public void paint(Graphics g){
 		try{

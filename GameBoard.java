@@ -18,7 +18,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	/*** Color Scheme ***/
 	public static final Color MAIN = Color.BLACK;
 	public static final Color FONT = Color.WHITE;
-	public static final Color MOUSE = new Color(50, 50, 50);
+	public static final Color MOUSE = new Color(75, 75, 75);
 	
 	/*** Private Member Variables ***/
 	//Image
@@ -94,8 +94,9 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		try{
 			super.paint(g);
 			g.drawImage(img, imgCorner[0], imgCorner[1], imgDim[0], imgDim[1], MAIN, null);
-			sideControls.paint(g);
-			playerStats.paint(g);
+			//sideControls.paint(g);
+			//playerStats.paint(g);
+			//bottomControls.paint(g);
 			BoardState.paint(g);
 		}catch(Exception e){/*JOptionPane.showMessageDialog(this, "Encountered Error")*/;}
 	}

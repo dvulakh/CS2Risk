@@ -12,7 +12,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	public static final String NAME = "RISK: The Game of World Domination";
 	public static final String[] TERRITORY_NAMES = {"Alaska", "Alberta", "Central America", "Eastern United States", "Greenland", "Northwest Territory", "Ontario", "Quebec", "Western United States", "Argentina", "Brazil", "Peru", "Venezuela", "Great Britain", "Iceland", "Northern Europe", "Scandinavia", "Southern Europe", "Ukraine", "Western Europe", "Congo", "East Africa", "Egypt", "Madagascar", "North Africa", "South Africa", "Afghanistan", "China", "India", "Irkutsk", "Japan", "Kamchatka", "Middle East", "Mongolia", "Siam", "Siberia", "Ural", "Yakutsk", "Eastern Australia", "Indonesia", "New Guinea", "Western Australia"};
 	public static final boolean[][] ADJACENCY = {};
-	public static final double[][] LOCATIONS = {{0.072, 0.185}};
+	public static final double[][] LOCATIONS = {{0.072, 0.185}, {0.161, 0.2727}, {0.1834, 0.471}, {0.2422, 0.3875}, {0.3895, 0.1263}, {0.15596, 0.1948}, {0.226, 0.2834}, {0.307, 0.28}, {0.1675, 0.3636}};
 	public static final double MAP_HEIGHT = 0.85;
 	
 	/*** Color Scheme ***/
@@ -29,6 +29,8 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	private JPanel bottomControls;
 	private JPanel sideControls;
 	private JPanel playerStats;
+	//Mouse manipulation
+	private Territory moused;
 	
 	/*** Constructor ***/
 	public GameBoard() throws IOException {
@@ -124,7 +126,23 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		JOptionPane.showMessageDialog(this, locs[0] + "     " + locs[1]);
 	}
 	public void mouseDragged(MouseEvent arg0) {}
-	public void mouseMoved(MouseEvent arg0) {}
+	public void mouseMoved(MouseEvent arg0) {
+
+		//Check territories
+		Territory tMouse = null;
+		for(Territory t: BoardState.territories)
+			if(Math.sqrt(Math.pow(getMousePosition().getX() - t.getCLocX(), 2) + Math.pow(getMousePosition().getY() - t.getCLocY(), 2)) <= Territory.RAD())
+				tMouse = t;
+		if(tMouse != moused){
+			if(moused != null)
+				moused.setColor(Territory.BASE_COL);
+			if(tMouse != null)
+				tMouse.setColor(Territory.MOUSE_COL);
+			BoardState.paint(getGraphics());;
+		}
+		moused = tMouse;		
+		
+	}
 	public void mouseClicked(MouseEvent arg0) {printCoords();}
 	public void mouseEntered(MouseEvent arg0) {}
 	public void mouseExited(MouseEvent arg0) {}

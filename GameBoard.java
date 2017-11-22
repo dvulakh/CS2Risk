@@ -1,4 +1,3 @@
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -43,16 +42,23 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		setLayout(new FlowLayout());
 		setVisible(true);
 		
+		//JOptionPane.showMessageDialog(null, getInsets().top+" "+getInsets().bottom+" "+getInsets().left+" "+getInsets().right);
 		//Set up image
-		try{Thread.sleep(100);}catch(Exception e){}
+		try{
+			Thread.sleep(1000);
+		} catch(Exception e) {}
 		imgCorner = new int[2];
 		imgDim = new int[2];
 		try{
 			img = ImageIO.read(new File("src/Risk-Map.png"));
-			imgDim[1] = (int)(MAP_HEIGHT * (getHeight() - getInsets().top));
+			System.out.println(img.getWidth(null)+" "+img.getHeight(null));
+			System.out.println(getWidth()+" " +getHeight());
+			imgDim[1] = (int)(MAP_HEIGHT * (getHeight() - getInsets().top - getInsets().bottom));
 			imgDim[0] = imgDim[1] * img.getWidth(null) / img.getHeight(null);
-			imgCorner[0] = (getWidth() + getInsets().left + getInsets().right - imgDim[0]) / 2;
+			System.out.println(imgDim[0]+" "+imgDim[1]);
+			imgCorner[0] = (getWidth() + getInsets().left - getInsets().right - imgDim[0]) / 2;
 			imgCorner[1] = getInsets().top;
+			System.out.println(imgCorner[0]+" "+imgCorner[1]);
 		}catch(IIOException e){
 			JOptionPane.showMessageDialog(this, "Error reading map");
 			imgDim[1] = getHeight();
@@ -65,15 +71,18 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		playerStats = new JPanel();
 		sideControls = new JPanel();
 		bottomControls = new JPanel();
-		this.add(playerStats);
-		this.add(sideControls);
-		this.add(bottomControls);
+		
 		playerStats.setBackground(Color.RED);
 		sideControls.setBackground(Color.GREEN);
 		bottomControls.setBackground(Color.BLUE);
-		playerStats.setBounds(0, 0, (getWidth() - imgDim[0]) / 2, getHeight());
-		sideControls.setBounds((getWidth() - imgDim[0]) / 2 + imgDim[0], 0, (getWidth() - imgDim[0]) / 2, getHeight());
-		bottomControls.setBounds((getWidth() - imgDim[0]) / 2, imgDim[1], imgDim[0], getHeight() - imgDim[1]);
+		
+		playerStats.setBounds(0, 0, imgCorner[0], getHeight());
+		sideControls.setBounds(imgCorner[0] + imgDim[0], 0, imgCorner[0], getHeight());
+		bottomControls.setBounds(imgCorner[0], imgDim[1], imgDim[0], getHeight() - imgDim[1]);
+		
+		this.add(playerStats);
+		this.add(sideControls);
+		this.add(bottomControls);
 		
 		//Listeners
 		addMouseMotionListener(this);
@@ -84,14 +93,11 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	}
 	
 	/*** Draw ***/
-	public void paintComponent(Graphics g){paint(g);}
 	public void repaint(){paint(getGraphics());}
 	public void paint(Graphics g){
 		try{
 			super.paint(g);
 			g.drawImage(img, imgCorner[0], imgCorner[1], imgDim[0], imgDim[1], MAIN, null);
-			sideControls.paint(g);
-			playerStats.paint(g);
 			//state.paint(g);
 		}catch(Exception e){}
 	}
@@ -117,15 +123,9 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	public void keyTyped(KeyEvent arg0) {}
 
 	/*** Mouse Response ***/
-	public void printCoords(){
-		double[] locs = {0, 0};
-		locs[0] = (double)(getMousePosition().getX() - imgCorner[0]) / imgDim[0];
-		locs[1] = (double)(getMousePosition().getX() - imgCorner[1]) / imgDim[1];
-		JOptionPane.showMessageDialog(this, locs[0] + "     " + locs[1]);
-	}
 	public void mouseDragged(MouseEvent arg0) {}
 	public void mouseMoved(MouseEvent arg0) {}
-	public void mouseClicked(MouseEvent arg0) {printCoords();}
+	public void mouseClicked(MouseEvent arg0) {}
 	public void mouseEntered(MouseEvent arg0) {}
 	public void mouseExited(MouseEvent arg0) {}
 	public void mousePressed(MouseEvent arg0) {}

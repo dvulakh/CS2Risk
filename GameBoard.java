@@ -12,7 +12,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	public static final String NAME = "RISK: The Game of World Domination";
 	public static final String[] TERRITORY_NAMES = {"Alaska", "Alberta", "Central America", "Eastern United States", "Greenland", "Northwest Territory", "Ontario", "Quebec", "Western United States", "Argentina", "Brazil", "Peru", "Venezuela", "Great Britain", "Iceland", "Northern Europe", "Scandinavia", "Southern Europe", "Ukraine", "Western Europe", "Congo", "East Africa", "Egypt", "Madagascar", "North Africa", "South Africa", "Afghanistan", "China", "India", "Irkutsk", "Japan", "Kamchatka", "Middle East", "Mongolia", "Siam", "Siberia", "Ural", "Yakutsk", "Eastern Australia", "Indonesia", "New Guinea", "Western Australia"};
 	public static final boolean[][] ADJACENCY = {};
-	public static final double[] LOCATIONS = {};
+	public static final double[][] LOCATIONS = {{0.072, 0.185}};
 	public static final double MAP_HEIGHT = 0.85;
 	
 	/*** Color Scheme ***/
@@ -21,8 +21,6 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	public static final Color MOUSE = new Color(50, 50, 50);
 	
 	/*** Private Member Variables ***/
-	//BoardState
-	private BoardState state;
 	//Image
 	private int[] imgCorner;
 	private int[] imgDim;
@@ -75,6 +73,10 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		sideControls.setBounds((getWidth() - imgDim[0]) / 2 + imgDim[0], 0, (getWidth() - imgDim[0]) / 2, getHeight());
 		bottomControls.setBounds((getWidth() - imgDim[0]) / 2, imgDim[1], imgDim[0], getHeight() - imgDim[1]);
 		
+		//Set up game
+		BoardState.BOARD = this;
+		BoardState.startGame();
+		
 		//Listeners
 		addMouseMotionListener(this);
 		addMouseListener(this);
@@ -92,17 +94,15 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 			g.drawImage(img, imgCorner[0], imgCorner[1], imgDim[0], imgDim[1], MAIN, null);
 			sideControls.paint(g);
 			playerStats.paint(g);
-			//state.paint(g);
-		}catch(Exception e){}
+			BoardState.paint(g);
+		}catch(Exception e){/*JOptionPane.showMessageDialog(this, "Encountered Error")*/;}
 	}
 	
 	/*** Accessors & Mutators ***/
 	//Accessors
-	public BoardState getBoardState(){return state;}
 	public int[] getImgCorner(){return imgCorner;}
 	public int[] getImgDim(){return imgDim;}
 	//Mutators
-	public void setBoardState(BoardState bs){state = bs;}
 	public void setImgCorner(int[] l){imgCorner = l;}
 	public void setImgDim(int[] d){imgDim = d;}
 	
@@ -120,7 +120,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	public void printCoords(){
 		double[] locs = {0, 0};
 		locs[0] = (double)(getMousePosition().getX() - imgCorner[0]) / imgDim[0];
-		locs[1] = (double)(getMousePosition().getX() - imgCorner[1]) / imgDim[1];
+		locs[1] = (double)(getMousePosition().getY() - imgCorner[1]) / imgDim[1];
 		JOptionPane.showMessageDialog(this, locs[0] + "     " + locs[1]);
 	}
 	public void mouseDragged(MouseEvent arg0) {}

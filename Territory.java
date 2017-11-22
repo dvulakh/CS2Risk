@@ -1,5 +1,6 @@
 
 import java.awt.*;
+import javax.swing.*;
 
 public class Territory {
 	
@@ -9,7 +10,6 @@ public class Territory {
 	public static final Color CLICK_COL = Color.MAGENTA;
 	public static final Color ATTACK_COL = Color.RED;
 	public static final int RAD = 20;
-	public static GameBoard BOARD;
 	
 	/*** Private Member Variables ***/
 	private Player occupation;
@@ -31,9 +31,10 @@ public class Territory {
 	
 	/*** Paint ***/
 	public void paint(Graphics g){
-		int[] l = {(int)(BOARD.getImgCorner()[0] + loc[0] * BOARD.getImgDim()[0] - RAD), (int)(BOARD.getImgCorner()[1] + loc[1] * BOARD.getImgDim()[1] - RAD)};
+		JOptionPane.showMessageDialog(BoardState.BOARD, "Painting " + name);
+		int[] l = {(int)(BoardState.BOARD.getImgCorner()[0] + loc[0] * BoardState.BOARD.getImgDim()[0] - RAD), (int)(BoardState.BOARD.getImgCorner()[1] + loc[1] * BoardState.BOARD.getImgDim()[1] - RAD)};
 		g.setColor(col);
-		g.fillOval(l[0], l[1], RAD, RAD);
+		g.fillOval(l[0], l[1], 2 * RAD, 2 * RAD);
 		//g.setColor(occupation.getColor());
 		g.setColor(Color.WHITE);
 		g.drawString(Integer.toString(troops), l[0], l[1]);

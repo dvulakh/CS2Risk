@@ -12,7 +12,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	public static final String NAME = "RISK: The Game of World Domination";
 	public static final String[] TERRITORY_NAMES = {"Alaska", "Alberta", "Central America", "Eastern United States", "Greenland", "Northwest Territory", "Ontario", "Quebec", "Western United States", "Argentina", "Brazil", "Peru", "Venezuela", "Great Britain", "Iceland", "Northern Europe", "Scandinavia", "Southern Europe", "Ukraine", "Western Europe", "Congo", "East Africa", "Egypt", "Madagascar", "North Africa", "South Africa", "Afghanistan", "China", "India", "Irkutsk", "Japan", "Kamchatka", "Middle East", "Mongolia", "Siam", "Siberia", "Ural", "Yakutsk", "Eastern Australia", "Indonesia", "New Guinea", "Western Australia"};
 	public static final boolean[][] ADJACENCY = {};
-	public static final double[][] LOCATIONS = {{0.072, 0.185}, {0.161, 0.2727}, {0.1834, 0.471}, {0.242, 0.389}, {0.3895, 0.1263}, {0.15596, 0.1948}, {0.226, 0.2834}, {0.307, 0.28}, {0.1675, 0.3636}};
+	public static final double[][] LOCATIONS = {{0.072, 0.185}, {0.161, 0.2727}, {0.1834, 0.471}, {0.242, 0.389}, {0.3895, 0.1263}, {0.15596, 0.1948}, {0.226, 0.2834}, {0.307, 0.28}, {0.1675, 0.3636}, {0.245, 0.82}, {0.3, 0.68}, {0.245, 0.718}, {0.224, 0.583}, {0.425, 0.313}, {0.422, 0.2245}, {0.469, 0.337}, {0.504, 0.167}, {0.504, 0.405}, {0.567, 0.275}, {0.42, 0.438}, {0.493, 0.727}, {0.54, 0.66}, {0.5, 0.535}, {0.573, 0.845}, {0.425, 0.597}, {0.493, 0.86}, {0.644, 0.37}, {0.75, 0.446}, {0.67, 0.52}, {0.792, 0.287}, {0.88, 0.4}, {0.93, 0.193}, {0.574, 0.479}, {0.821, 0.36}, {0.764, 0.56}, {0.731, 0.233}, {0.663, 0.25}, {0.832, 0.191}, {0.876, 0.835}, {0.787, 0.685}, {0.892, 0.697}, {0.782, 0.831}};
 	public static final double MAP_HEIGHT = 0.8;
 	public static final double INFO_WIDTH = 0.6;
 	public static final double PAD = 0.01;
@@ -128,6 +128,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		holders[0].setBounds(0, 0, (int)(bottomControls.getBounds().width * (1 - INFO_WIDTH) / 2), bottomControls.getBounds().height);
 		holders[1].setBounds(bottomControls.getBounds().width - holders[0].getBounds().width, 0, holders[0].getBounds().width, bottomControls.getBounds().height);
 		infoDisplay.setBounds(holders[0].getBounds().width, 0, (int)(bottomControls.getBounds().width * INFO_WIDTH), bottomControls.getBounds().height);
+		infoDisplay.setFont(new Font(infoDisplay.getFont().getName(), infoDisplay.getFont().getStyle(), infoDisplay.getBounds().height / 10));
 	}
 	
 	/*** Load and Resize Image ***/
@@ -192,6 +193,8 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 			int i = (int)(getMousePosition().getY() / (screenDim[1] / (BoardState.MAX_PLAYER + 1)));
 			if(i < BoardState.players.length)
 				infoDisplay.setText(BoardState.players[i].fullStats());
+			else
+				infoDisplay.setText("");
 		}
 		else if(moused == null)
 			infoDisplay.setText("");

@@ -5,100 +5,163 @@ import java.io.*;
 import javax.imageio.*;
 import javax.swing.*;
 
-public class GameBoard extends JFrame implements MouseListener, MouseMotionListener, KeyListener, WindowListener {
+public class GameBoard extends JFrame implements MouseListener, MouseMotionListener, WindowListener, ActionListener {
 	private static final long serialVersionUID = 1L;
 	
 	/*** Hardcoded Info ***/
 	public static final String NAME = "RISK: The Game of World Domination";
 	public static final String[] TERRITORY_NAMES = {"Alaska", "Alberta", "Central America", "Eastern United States", "Greenland", "Northwest Territory", "Ontario", "Quebec", "Western United States", "Argentina", "Brazil", "Peru", "Venezuela", "Great Britain", "Iceland", "Northern Europe", "Scandinavia", "Southern Europe", "Ukraine", "Western Europe", "Congo", "East Africa", "Egypt", "Madagascar", "North Africa", "South Africa", "Afghanistan", "China", "India", "Irkutsk", "Japan", "Kamchatka", "Middle East", "Mongolia", "Siam", "Siberia", "Ural", "Yakutsk", "Eastern Australia", "Indonesia", "New Guinea", "Western Australia"};
 	public static final boolean[][] ADJACENCY = {};
-	public static final double[][] LOCATIONS = {{0.072, 0.185}, {0.161, 0.2727}, {0.1834, 0.471}, {0.2422, 0.3875}, {0.3895, 0.1263}, {0.15596, 0.1948}, {0.226, 0.2834}, {0.307, 0.28}, {0.1675, 0.3636}};
-	public static final double MAP_HEIGHT = 0.85;
+	public static final double[][] LOCATIONS = {{0.072, 0.185}, {0.161, 0.2727}, {0.1834, 0.471}, {0.242, 0.389}, {0.3895, 0.1263}, {0.15596, 0.1948}, {0.226, 0.2834}, {0.307, 0.28}, {0.1675, 0.3636}};
+	public static final double MAP_HEIGHT = 0.8;
+	public static final double INFO_WIDTH = 0.6;
+	public static final double PAD = 0.01;
 	
 	/*** Color Scheme ***/
 	public static final Color MAIN = Color.BLACK;
 	public static final Color FONT = Color.WHITE;
-	public static final Color MOUSE = new Color(75, 75, 75);
+	public static final Color MOUSE = Color.DARK_GRAY;
+	
+	/*** Painting settings ***/
+	public boolean showCount;
+	public boolean showGraph;
 	
 	/*** Private Member Variables ***/
 	//Image
+	public int[] screenDim;
 	private int[] imgCorner;
 	private int[] imgDim;
 	private Image img;
 	//Controls
+	private String[][] bottomButtonNames = {{"Hide Troop Count", "Show Troop Count"}, {"Show Adjacency Graph", "Hide Adjacency Graph"}, {"Button 3"}, {"End Phase"}, {"Show Cards", "Hide Cards"}, {"Button 6"}};
 	private JPanel bottomControls;
 	private JPanel sideControls;
 	private JPanel playerStats;
+	private JPanel[] holders;
+	private JButton[] bottomButtons;
+	private JTextArea infoDisplay;
 	//Mouse manipulation
 	private Territory moused;
 	
 	/*** Constructor ***/
 	public GameBoard() throws IOException {
 		
-		//Set Up window
+		//Create window
 		super(NAME);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		getContentPane().setBackground(MAIN);
-		setLayout(new FlowLayout());
-		setVisible(true);
+		setLayout(null);
 		
 		//Set up image
-		try{Thread.sleep(100);}catch(Exception e){}
+		screenDim = new int[2];
 		imgCorner = new int[2];
 		imgDim = new int[2];
-		try{
-			img = ImageIO.read(new File("src/Risk-Map.png"));
-			imgDim[1] = (int)(MAP_HEIGHT * (getHeight() - getInsets().top));
-			imgDim[0] = imgDim[1] * img.getWidth(null) / img.getHeight(null);
-			imgCorner[0] = (getWidth() + getInsets().left + getInsets().right - imgDim[0]) / 2;
-			imgCorner[1] = getInsets().top;
-		}catch(IIOException e){
-			JOptionPane.showMessageDialog(this, "Error reading map");
-			imgDim[1] = getHeight();
-			imgDim[0] = 3 * getWidth() / 5;
-			imgCorner[0] = (getWidth() - imgDim[0]) / 2;
-			imgCorner[1] = 0;
+		screenDim[0] = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+		screenDim[1] = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+		loadImage();
+		
+		//Set up game
+		showCount = true;
+		showGraph = false;
+		BoardState.BOARD = this;
+		BoardState.startGame();
+		playerStats = new JPanel(new GridLayout(BoardState.MAX_PLAYER + 1, 1));
+		for(Player p: BoardState.players){
+			p.updateStatDisplay();
+			playerStats.add(p.getStats());
 		}
 		
 		//Add controls
-		playerStats = new JPanel();
 		sideControls = new JPanel();
 		bottomControls = new JPanel();
-		this.add(playerStats);
-		this.add(sideControls);
-		this.add(bottomControls);
-		playerStats.setBackground(Color.RED);
+		holders = new JPanel[2];
+		bottomButtons = new JButton[6];
+		holders[0] = new JPanel(new GridLayout(bottomButtons.length / 2, 1));
+		holders[1] = new JPanel(new GridLayout(bottomButtons.length / 2, 1));
+		infoDisplay = new JTextArea();
+		for(int i = 0; i < bottomButtons.length; i++){
+			bottomButtons[i] = new myButton(bottomButtonNames[i], MAIN, MOUSE);
+			bottomButtons[i].setForeground(FONT);
+			bottomButtons[i].setBorder(BorderFactory.createEmptyBorder());
+			bottomButtons[i].setFont(new Font("Consolas", Font.PLAIN, 3 * bottomButtons[i].getFont().getSize() / 2));
+			holders[i / (bottomButtons.length / 2)].add(bottomButtons[i]);
+		}
+		infoDisplay.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+		infoDisplay.setBackground(MAIN);
+		infoDisplay.setForeground(FONT);
+		infoDisplay.setMargin(new Insets(50, 50, 50, 50));
+		infoDisplay.setFont(new Font("Consolas", Font.PLAIN, 2 * infoDisplay.getFont().getSize()));
+		bottomControls.setLayout(null);
+		bottomControls.add(holders[0]);
+		bottomControls.add(holders[1]);
+		bottomControls.add(infoDisplay);
+		playerStats.setBackground(MAIN);
 		sideControls.setBackground(Color.GREEN);
-		bottomControls.setBackground(Color.BLUE);
-		playerStats.setBounds(0, 0, (getWidth() - imgDim[0]) / 2, getHeight());
-		sideControls.setBounds((getWidth() - imgDim[0]) / 2 + imgDim[0], 0, (getWidth() - imgDim[0]) / 2, getHeight());
-		bottomControls.setBounds((getWidth() - imgDim[0]) / 2, imgDim[1], imgDim[0], getHeight() - imgDim[1]);
-		
-		//Set up game
-		BoardState.BOARD = this;
-		BoardState.startGame();
+		bottomControls.setBackground(MAIN);
+		add(playerStats);
+		add(sideControls);
+		add(bottomControls);
 		
 		//Listeners
 		addMouseMotionListener(this);
+		addWindowListener(this);
 		addMouseListener(this);
-		addKeyListener(this);
-		paint(getGraphics());
+		
+		//Window settings
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setExtendedState(JFrame.MAXIMIZED_BOTH);
+		setUndecorated(true);
+		getContentPane().setBackground(MAIN);
+		resetImage();
+		resetControls();
+		setVisible(true);
+		setState(Frame.ICONIFIED);
+		setState(Frame.NORMAL);
+		repaint();
 		
 	}
 	
+	/*** Resize Panels ***/
+	private void resetControls(){
+		setLayout(null);
+		playerStats.setBounds((int)(screenDim[1] * PAD), (int)(screenDim[1] * PAD), (screenDim[0] - imgDim[0]) / 2 - (int)(screenDim[1] * PAD), screenDim[1] - getInsets().top - getInsets().bottom - 2 * (int)(screenDim[1] * PAD));
+		sideControls.setBounds((screenDim[0] - imgDim[0]) / 2 + imgDim[0], 0, (screenDim[0] - imgDim[0]) / 2, screenDim[1] - getInsets().top - getInsets().bottom);
+		bottomControls.setBounds((screenDim[0] - imgDim[0]) / 2, imgDim[1], imgDim[0], screenDim[1] - imgDim[1]);
+		holders[0].setBounds(0, 0, (int)(bottomControls.getBounds().width * (1 - INFO_WIDTH) / 2), bottomControls.getBounds().height);
+		holders[1].setBounds(bottomControls.getBounds().width - holders[0].getBounds().width, 0, holders[0].getBounds().width, bottomControls.getBounds().height);
+		infoDisplay.setBounds(holders[0].getBounds().width, 0, (int)(bottomControls.getBounds().width * INFO_WIDTH), bottomControls.getBounds().height);
+	}
+	
+	/*** Load and Resize Image ***/
+	private void loadImage() throws IOException{
+		try{img = ImageIO.read(new File("src/Risk-Map.png"));}
+		catch(IIOException e){JOptionPane.showMessageDialog(this, "Error reading map");}
+	}
+	private void resetImage(){
+		if(img == null){
+			JOptionPane.showMessageDialog(this, "Error: Image not loaded");
+			return;
+		}
+		imgDim[1] = (int)(MAP_HEIGHT * (screenDim[1] - getInsets().top));
+		imgDim[0] = imgDim[1] * img.getWidth(null) / img.getHeight(null);
+		imgCorner[0] = (screenDim[0] + getInsets().left + getInsets().right - imgDim[0]) / 2;
+		imgCorner[1] = getInsets().top;
+	}
+	
 	/*** Draw ***/
-	public void paintComponent(Graphics g){paint(g);}
-	public void repaint(){paint(getGraphics());}
-	public void paint(Graphics g){
+	public void paintImage(Graphics g){
+		resetImage();
 		try{
-			super.paint(g);
 			g.drawImage(img, imgCorner[0], imgCorner[1], imgDim[0], imgDim[1], MAIN, null);
-			//sideControls.paint(g);
-			//playerStats.paint(g);
-			//bottomControls.paint(g);
-			BoardState.paint(g);
-		}catch(Exception e){/*JOptionPane.showMessageDialog(this, "Encountered Error")*/;}
+		}catch(Exception e){JOptionPane.showMessageDialog(this, "Map Drawing Error: " + e);}
+	}
+	public void paintComponent(Graphics g){repaint();}
+	public void repaint(){drawGame(getGraphics());}
+	public void paint(Graphics g){}
+	public void drawGame(Graphics g){
+		resetImage();
+		resetControls();
+		super.paint(g);
+		paintImage(g);
+		BoardState.paint(g);
 	}
 	
 	/*** Accessors & Mutators ***/
@@ -114,11 +177,6 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		return false;
 	}
 
-	/*** Key Response ***/
-	public void keyPressed(KeyEvent arg0) {}
-	public void keyReleased(KeyEvent arg0) {}
-	public void keyTyped(KeyEvent arg0) {}
-
 	/*** Mouse Response ***/
 	public void printCoords(){
 		double[] locs = {0, 0};
@@ -128,6 +186,15 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	}
 	public void mouseDragged(MouseEvent arg0) {}
 	public void mouseMoved(MouseEvent arg0) {
+		
+		//Check players
+		if(getMousePosition().getX() < imgCorner[0]){
+			int i = (int)(getMousePosition().getY() / (screenDim[1] / (BoardState.MAX_PLAYER + 1)));
+			if(i < BoardState.players.length)
+				infoDisplay.setText(BoardState.players[i].fullStats());
+		}
+		else if(moused == null)
+			infoDisplay.setText("");
 
 		//Check territories
 		Territory tMouse = null;
@@ -137,9 +204,12 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		if(tMouse != moused){
 			if(moused != null)
 				moused.setColor(Territory.BASE_COL);
-			if(tMouse != null)
+			if(tMouse != null){
 				tMouse.setColor(Territory.MOUSE_COL);
-			BoardState.paint(getGraphics());;
+				infoDisplay.setText(tMouse.fullStats());
+			}
+			else
+				infoDisplay.setText("");
 		}
 		moused = tMouse;		
 		
@@ -155,8 +225,19 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	public void windowClosed(WindowEvent arg0) {}
 	public void windowClosing(WindowEvent arg0) {}
 	public void windowDeactivated(WindowEvent arg0) {}
-	public void windowDeiconified(WindowEvent arg0) {}
+	public void windowDeiconified(WindowEvent arg0) {repaint();}
 	public void windowIconified(WindowEvent arg0) {}
 	public void windowOpened(WindowEvent arg0) {}
+
+	/*** Buttons ***/
+	public void actionPerformed(ActionEvent e) {
+		
+		if(e.getSource() == bottomButtons[0]){
+			showCount = !showCount;
+			paintImage(getGraphics());
+			BoardState.paint(getGraphics());
+		}
+		
+	}
 	
 }

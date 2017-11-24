@@ -11,8 +11,6 @@ public class Territory {
 	public static final Color ATTACK_COL = Color.RED;
 	public static final double RELATIVE_RAD = 0.025;
 	public static final double RELATIVE_FONT = 1.6;
-	//public static final int RAD = 20;
-	//public static final int FONT_SIZE = 8 * RAD / 5;
 	public static int RAD(){return (int)(BoardState.BOARD.getImgDim()[1] * RELATIVE_RAD);}
 	public static int FONT(){return (int)(RELATIVE_FONT * RAD());}
 	
@@ -23,9 +21,10 @@ public class Territory {
 	private String name;
 	private int troops;
 	private Color col;
+	private int indx;
 	
 	/*** Constructor ***/
-	public Territory(String nm, double lx, double ly){
+	public Territory(String nm, double lx, double ly, int i){
 		loc = new double[2];
 		occupation = null;
 		col = BASE_COL;
@@ -34,6 +33,7 @@ public class Territory {
 		loc[1] = ly;
 		troops = 0;
 		name = nm;
+		indx = i;
 	}
 	
 	/*** Accessors and Mutators ***/
@@ -51,7 +51,7 @@ public class Territory {
 	public void setLoc(double[] l){loc = l;}
 	public void setName(String s){name = s;}
 	public void setTroops(String n){name = n;}
-	public void setColor(Color c){if(!cLock) col = c;}
+	public void setColor(Color c){if(!cLock) col = c; paint(BoardState.BOARD.getGraphics());}
 	public void lock(){cLock = true;}
 	public void unlock(){cLock = false;}
 	

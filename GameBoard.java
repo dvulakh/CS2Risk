@@ -52,7 +52,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		//Set up game
 		BoardState.BOARD = this;
 		BoardState.startGame();
-		playerStats = new JPanel(new GridLayout(BoardState.MAX_PLAYER, 1));
+		playerStats = new JPanel(new GridLayout(BoardState.MAX_PLAYER + 1, 1));
 		for(Player p: BoardState.players){
 			p.updateStatDisplay();
 			playerStats.add(p.getStats());

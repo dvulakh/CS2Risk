@@ -93,7 +93,7 @@ public abstract class Player {
 		statDis[1][2].setText(team > 0 ? Integer.toString(team) : "---");
 		//Labels
 		statDis[2][0].setText("Occupied");
-		statDis[2][1].setText("Troops");
+		statDis[2][1].setText("Armies");
 		statDis[2][2].setText("Team");
 		//Color
 		bottomTwo[0].setBackground(GameBoard.MAIN);
@@ -116,7 +116,7 @@ public abstract class Player {
 		if(team > 0) stat += "team " + team + "\n";
 		stat += "basic statistics:\n";
 		stat += "\t" + expand("" + ter.size(), 4) + " occupied territories\n";
-		stat += "\t" + expand("" + troop, 4) + " total troops\n";
+		stat += "\t" + expand("" + troop, 4) + " total armies\n";
 		stat += "win-loss record:\n";
 		stat += "\t" + (battlesT > 0 ? expand(battlesW + "/" + battlesT, 7) + " battles won = " + round((double)battlesW / battlesT, 3) * 100 + "%\n" : "no battles fought\n");
 		stat += "\t" + (invT > 0 ? expand(invW + "/" + invT, 7) + " invasions won = " + round((double)invW / invT, 3) * 100 + "%\n" : "no invasions completed");

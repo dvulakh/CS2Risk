@@ -1,6 +1,5 @@
 
 import java.awt.*;
-import javax.swing.*;
 
 public class Territory {
 	
@@ -73,7 +72,7 @@ public class Territory {
 		stat += name + "\n";
 		stat += (occupation != null ? "occupied by " + occupation.getName() : "not occupied") + "\n";
 		if(troops > 0)
-			stat += troops + " occupying troops";
+			stat += troops + " occupying " + (troops == 1 ? "army" : "armies");
 		return stat.toUpperCase();
 	}
 	
@@ -86,7 +85,7 @@ public class Territory {
 			if(occupation != null){
 				g.setColor(occupation.getColor());
 				g.setFont(new Font("Consolas", Font.PLAIN, FONT()));
-				g.drawString(Integer.toString(troops), l[0] + RAD() / 2, l[1] + RAD() + FONT()/ 4);
+				g.drawString(Integer.toString(troops), l[0] + RAD() - g.getFontMetrics().stringWidth(Integer.toString(troops)) / 2, l[1] + RAD() + FONT() / 4);
 			}
 		}
 	}

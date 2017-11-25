@@ -25,7 +25,7 @@ public class BoardState {
 		players[5] = new HumanPlayer(6, "Falstaff", Color.ORANGE);
 		//Territory test - not evenly distributed
 		for(Territory t: territories)
-			t.occupy(players[(int)(Math.random() * players.length)], 1);
+			t.occupy(players[(int)(Math.random() * players.length)], (int)(Math.random() * 20) + 1);
 	}
 	
 	/*** Draw Board ***/

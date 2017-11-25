@@ -73,31 +73,31 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 			{{0.4135, 0.316}, {0.432, 0.324}},
 			{{0.422, 0.2245}},
 			{{0.469, 0.337}},
-			{{0.504, 0.167}, {0.534, 0.08}, {0.545, 0.066}, {0.5465, 0.0868}},
-			{{0.504, 0.405}},
-			{{0.567, 0.275}},
-			{{0.42, 0.438}},
+			{{0.504, 0.167}, {0.534, 0.08}, {0.545, 0.066}, {0.5465, 0.0868}, {0.4896, 0.2905}, {0.4835, 0.2951}},
+			{{0.504, 0.405}, {0.4789, 0.4549}, {0.4612, 0.4294}, {0.508, 0.471}},
+			{{0.567, 0.275}, {0.601, 0.1}, {0.595, 0.119}, {0.619, 0.146}},
+			{{0.42, 0.438}, {0.46195, 0.4144}},
 			{{0.493, 0.727}},
-			{{0.54, 0.66}},
+			{{0.54, 0.66}, {0.6057, 0.6424}},
 			{{0.5, 0.535}},
 			{{0.573, 0.845}},
 			{{0.425, 0.597}},
 			{{0.493, 0.86}},
 			{{0.644, 0.37}},
-			{{0.75, 0.446}},
-			{{0.67, 0.52}},
+			{{0.75, 0.446}, {0.8217, 0.5093}, {0.7879, 0.5382}},
+			{{0.67, 0.52}, {0.6949, 0.669}},
 			{{0.792, 0.287}},
-			{{0.88, 0.4}},
-			{{0.93, 0.193}},
-			{{0.574, 0.479}},
+			{{0.88, 0.4}, {0.8862, 0.3542}, {0.8779, 0.3611}, {0.8693, 0.4271}, {0.8601, 0.4375}},
+			{{0.93, 0.193}, {0.92, 0.1539}, {0.937, 0.145}, {0.875, 0.3137}},
+			{{0.574, 0.479}, {0.5365, 0.478}},
 			{{0.821, 0.36}},
 			{{0.764, 0.56}},
-			{{0.731, 0.26}},
+			{{0.731, 0.26}, {0.7025, 0.0845}, {0.7164, 0.0868}, {0.7325, 0.0938}, {0.7694, 0.1296}, {0.707, 0.0718}},
 			{{0.663, 0.25}},
-			{{0.832, 0.191}},
-			{{0.876, 0.835}},
-			{{0.787, 0.685}},
-			{{0.892, 0.697}},
+			{{0.832, 0.191}, {0.8255, 0.1181}, {0.8355, 0.1146}, {0.8432, 0.1169}, {0.8401, 0.1273}},
+			{{0.876, 0.835}, {0.935, 0.833}, {0.952, 0.815}},
+			{{0.787, 0.685}, {0.8493, 0.559}, {0.85857, 0.5926}, {0.8524, 0.5903}, {0.8324, 0.5926}, {0.8286, 0.662}, {0.8078, 0.6771}, {0.7594, 0.6898}, {0.7663, 0.6748}, {0.7717, 0.6875}, {0.8317, 0.6863}, {0.8055, 0.7118}, {0.837, 0.7025}, {0.8355, 0.7037}, {0.8224, 0.7106}},
+			{{0.892, 0.697}, {0.917, 0.698}, {0.93, 0.685}},
 			{{0.782, 0.831}}};
 	public static final long[] ADJACENCY = {
 			(long)0 | L << 1 | L << 5 | L << 31,
@@ -164,7 +164,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	private int[] imgDim;
 	private BufferedImage img;
 	//Controls
-	private String[][] bottomButtonNames = {{"Hide Troop Count", "Show Troop Count"}, {"Show Adjacency Graph", "Hide Adjacency Graph"}, {"Fill by Occupation", "Fill by Continent"}, {"End Phase"}, {"Show Cards", "Hide Cards"}, {"Button 6"}};
+	private String[][] bottomButtonNames = {{"Hide Troop Count", "Show Troop Count"}, {"Show Adjacency Graph", "Hide Adjacency Graph"}, {"Fill by Continent", "Fill by Occupant"}, {"End Phase"}, {"Show Cards", "Hide Cards"}, {"Button 6"}};
 	private JPanel bottomControls;
 	private JPanel sideControls;
 	private JPanel playerStats;
@@ -192,7 +192,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		//Set up game
 		showCount = true;
 		showGraph = false;
-		flood = false;
+		flood = true;
 		BoardState.BOARD = this;
 		BoardState.startGame();
 		playerStats = new JPanel(new GridLayout(BoardState.MAX_PLAYER + 1, 1));

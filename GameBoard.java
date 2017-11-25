@@ -1,6 +1,7 @@
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.*;
 import java.io.*;
 import javax.imageio.*;
 import javax.swing.*;
@@ -12,7 +13,92 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	public static final long L = 1; 
 	public static final String NAME = "RISK: The Game of World Domination";
 	public static final String[] TERRITORY_NAMES = {"Alaska", "Alberta", "Central America", "Eastern United States", "Greenland", "Northwest Territory", "Ontario", "Quebec", "Western United States", "Argentina", "Brazil", "Peru", "Venezuela", "Great Britain", "Iceland", "Northern Europe", "Scandinavia", "Southern Europe", "Ukraine", "Western Europe", "Congo", "East Africa", "Egypt", "Madagascar", "North Africa", "South Africa", "Afghanistan", "China", "India", "Irkutsk", "Japan", "Kamchatka", "Middle East", "Mongolia", "Siam", "Siberia", "Ural", "Yakutsk", "Eastern Australia", "Indonesia", "New Guinea", "Western Australia"};
-	public static final double[][] LOCATIONS = {{0.072, 0.185}, {0.161, 0.2727}, {0.1834, 0.471}, {0.242, 0.389}, {0.3895, 0.1263}, {0.15596, 0.1948}, {0.226, 0.2834}, {0.307, 0.28}, {0.1675, 0.3636}, {0.245, 0.82}, {0.3, 0.68}, {0.245, 0.718}, {0.224, 0.583}, {0.425, 0.313}, {0.422, 0.2245}, {0.469, 0.337}, {0.504, 0.167}, {0.504, 0.405}, {0.567, 0.275}, {0.42, 0.438}, {0.493, 0.727}, {0.54, 0.66}, {0.5, 0.535}, {0.573, 0.845}, {0.425, 0.597}, {0.493, 0.86}, {0.644, 0.37}, {0.75, 0.446}, {0.67, 0.52}, {0.792, 0.287}, {0.88, 0.4}, {0.93, 0.193}, {0.574, 0.479}, {0.821, 0.36}, {0.764, 0.56}, {0.731, 0.26}, {0.663, 0.25}, {0.832, 0.191}, {0.876, 0.835}, {0.787, 0.685}, {0.892, 0.697}, {0.782, 0.831}};
+	public static final double[][] LOCATIONS = {
+			{0.072, 0.185},
+			{0.161, 0.2727},
+			{0.1834, 0.471},
+			{0.242, 0.389},
+			{0.3895, 0.1263},
+			{0.15596, 0.1948},
+			{0.226, 0.2834},
+			{0.307, 0.28},
+			{0.1675, 0.3636},
+			{0.245, 0.82},
+			{0.3, 0.68},
+			{0.245, 0.718},
+			{0.224, 0.583},
+			{0.425, 0.313},
+			{0.422, 0.2245},
+			{0.469, 0.337},
+			{0.504, 0.167},
+			{0.504, 0.405},
+			{0.567, 0.275},
+			{0.42, 0.438},
+			{0.493, 0.727},
+			{0.54, 0.66},
+			{0.5, 0.535},
+			{0.573, 0.845},
+			{0.425, 0.597},
+			{0.493, 0.86},
+			{0.644, 0.37},
+			{0.75, 0.446},
+			{0.67, 0.52},
+			{0.792, 0.287},
+			{0.88, 0.4},
+			{0.93, 0.193},
+			{0.574, 0.479},
+			{0.821, 0.36},
+			{0.764, 0.56},
+			{0.731, 0.26},
+			{0.663, 0.25},
+			{0.832, 0.191},
+			{0.876, 0.835},
+			{0.787, 0.685},
+			{0.892, 0.697},
+			{0.782, 0.831}};
+	public static final double[][][] FILL_LOCS = {
+			{{0.072, 0.185}, {0.049193, 0.25116}, {0.102998, 0.25116}, {0.10684, 0.2581}, {0.1091, 0.2685}},
+			{{0.161, 0.2727}, {0.1299, 0.3125}},
+			{{0.1834, 0.471}},
+			{{0.242, 0.389}, {0.277, 0.483}, {0.265, 0.4896}},
+			{{0.3895, 0.1263}, {0.312, 0.045}, {0.2698, 0.1053}, {0.3075, 0.1644}, {0.3397, 0.1828}, {0.2913, 0.1817}, {0.241, 0.185}, {0.2667, 0.2060}, {0.2644, 0.22685}, {0.27133, 0.2269}, {0.2475, 0.1169}, {0.2329, 0.10764}, {0.2352, 0.1342}, {0.2014, 0.1447}, {0.2329, 0.07639}, {0.22214, 0.08323}, {0.2121, 0.1053}, {0.1652, 0.1238}, {0.1868, 0.09954}},
+			{{0.15596, 0.1948}},
+			{{0.226, 0.2834}},
+			{{0.307, 0.28}, {0.349, 0.3125}, {0.328, 0.31597}},
+			{{0.1675, 0.3636}, {0.058, 0.449}},
+			{{0.245, 0.82}, {0.289, 0.939}, {0.3028, 0.931}},
+			{{0.3, 0.68}, {0.3075, 0.6146}},
+			{{0.245, 0.718}},
+			{{0.224, 0.583}},
+			{{0.4135, 0.316}, {0.432, 0.324}},
+			{{0.422, 0.2245}},
+			{{0.469, 0.337}},
+			{{0.504, 0.167}, {0.534, 0.08}, {0.545, 0.066}, {0.5465, 0.0868}},
+			{{0.504, 0.405}},
+			{{0.567, 0.275}},
+			{{0.42, 0.438}},
+			{{0.493, 0.727}},
+			{{0.54, 0.66}},
+			{{0.5, 0.535}},
+			{{0.573, 0.845}},
+			{{0.425, 0.597}},
+			{{0.493, 0.86}},
+			{{0.644, 0.37}},
+			{{0.75, 0.446}},
+			{{0.67, 0.52}},
+			{{0.792, 0.287}},
+			{{0.88, 0.4}},
+			{{0.93, 0.193}},
+			{{0.574, 0.479}},
+			{{0.821, 0.36}},
+			{{0.764, 0.56}},
+			{{0.731, 0.26}},
+			{{0.663, 0.25}},
+			{{0.832, 0.191}},
+			{{0.876, 0.835}},
+			{{0.787, 0.685}},
+			{{0.892, 0.697}},
+			{{0.782, 0.831}}};
 	public static final long[] ADJACENCY = {
 			(long)0 | L << 1 | L << 5 | L << 31,
 			(long)0 | L | L << 5 | L << 6 | L << 8,
@@ -69,15 +155,16 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	/*** Painting settings ***/
 	public boolean showCount;
 	public boolean showGraph;
+	public boolean flood;
 	
 	/*** Private Member Variables ***/
 	//Image
 	public int[] screenDim;
 	private int[] imgCorner;
 	private int[] imgDim;
-	private Image img;
+	private BufferedImage img;
 	//Controls
-	private String[][] bottomButtonNames = {{"Hide Troop Count", "Show Troop Count"}, {"Show Adjacency Graph", "Hide Adjacency Graph"}, {"Button 3"}, {"End Phase"}, {"Show Cards", "Hide Cards"}, {"Button 6"}};
+	private String[][] bottomButtonNames = {{"Hide Troop Count", "Show Troop Count"}, {"Show Adjacency Graph", "Hide Adjacency Graph"}, {"Fill by Occupation", "Fill by Continent"}, {"End Phase"}, {"Show Cards", "Hide Cards"}, {"Button 6"}};
 	private JPanel bottomControls;
 	private JPanel sideControls;
 	private JPanel playerStats;
@@ -105,6 +192,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		//Set up game
 		showCount = true;
 		showGraph = false;
+		flood = false;
 		BoardState.BOARD = this;
 		BoardState.startGame();
 		playerStats = new JPanel(new GridLayout(BoardState.MAX_PLAYER + 1, 1));
@@ -213,6 +301,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	//Accessors
 	public int[] getImgCorner(){return imgCorner;}
 	public int[] getImgDim(){return imgDim;}
+	public BufferedImage getImg(){return img;}
 	//Mutators
 	public void setImgCorner(int[] l){imgCorner = l;}
 	public void setImgDim(int[] d){imgDim = d;}
@@ -289,6 +378,13 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		//Hide adjacency
 		if(e.getSource() == bottomButtons[1]){
 			showGraph = !showGraph;
+			paintImage(getGraphics());
+			BoardState.paint(getGraphics());
+		}
+		
+		//Flood
+		if(e.getSource() == bottomButtons[2]){
+			flood = !flood;
 			paintImage(getGraphics());
 			BoardState.paint(getGraphics());
 		}

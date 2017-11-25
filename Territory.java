@@ -1,5 +1,6 @@
 
 import java.awt.*;
+import java.util.*;
 
 public class Territory {
 	
@@ -8,8 +9,10 @@ public class Territory {
 	public static final Color MOUSE_COL = GameBoard.MOUSE;
 	public static final Color CLICK_COL = Color.MAGENTA;
 	public static final Color ATTACK_COL = Color.RED;
+	public static final int BOUNDARY = 100;
 	public static final double RELATIVE_RAD = 0.025;
 	public static final double RELATIVE_FONT = 1.6;
+	public static final int NUM_BIT = 32;
 	public static int RAD(){return (int)(BoardState.BOARD.getImgDim()[1] * RELATIVE_RAD);}
 	public static int FONT(){return (int)(RELATIVE_FONT * RAD());}
 	
@@ -77,13 +80,38 @@ public class Territory {
 	}
 	
 	/*** Paint ***/
+	public int[] arr(double x, double y){int a[] = {(int)x, (int)y}; return a;}
+	public void floodTerr(Graphics g){
+		if(!BoardState.BOARD.flood)
+			return;
+		g.setColor(occupation == null ? Color.GRAY : occupation.getColor());
+		int[] imgSize = {BoardState.BOARD.getImg().getWidth(), BoardState.BOARD.getImg().getHeight()}; 
+		//System.out.println(imgSize[0] + " " + imgSize[1]);
+		int[][] vis = new int[imgSize[0]][imgSize[1] / NUM_BIT + 1];
+		LinkedList<int[]> q = new LinkedList<int[]>();
+		for(double[] d: GameBoard.FILL_LOCS[indx])
+			if(d.length > 0)
+				q.addLast(arr(d[0] * imgSize[0], d[1] * imgSize[1]));
+		while(!q.isEmpty()){
+			int[] c = q.removeFirst(), nx;
+			for(int i = -1; i <= 1; i++)
+				for(int j = -1; j <= 1; j++){
+					nx = arr(c[0] + i, c[1] + j);
+					if(((vis[nx[0]][nx[1] / NUM_BIT] & 1 << nx[1] % NUM_BIT) == 0) && ((BoardState.BOARD.getImg().getRGB(nx[0], nx[1]) & 255) >= BOUNDARY || ((BoardState.BOARD.getImg().getRGB(nx[0], nx[1]) >> 8) & 255) >= BOUNDARY || ((BoardState.BOARD.getImg().getRGB(nx[0], nx[1]) >> 16) & 255) >= BOUNDARY)){
+						q.addLast(nx);
+						vis[nx[0]][nx[1] / NUM_BIT] = vis[nx[0]][nx[1] / NUM_BIT] | 1 << nx[1] % NUM_BIT;
+						g.fillRect(nx[0] * BoardState.BOARD.getImgDim()[0] / imgSize[0] + BoardState.BOARD.getImgCorner()[0], nx[1] * BoardState.BOARD.getImgDim()[1] / imgSize[1] + BoardState.BOARD.getImgCorner()[1], 1, 1);
+					}
+				}
+		}
+	}
 	public void paint(Graphics g){
 		if(BoardState.BOARD.showCount){
 			int[] l = {(int)(BoardState.BOARD.getImgCorner()[0] + loc[0] * BoardState.BOARD.getImgDim()[0] - RAD()), (int)(BoardState.BOARD.getImgCorner()[1] + loc[1] * BoardState.BOARD.getImgDim()[1] - RAD())};
 			g.setColor(col);
 			g.fillOval(l[0], l[1], 2 * RAD(), 2 * RAD());
 			if(occupation != null){
-				g.setColor(occupation.getColor());
+				g.setColor(BoardState.BOARD.flood ? GameBoard.FONT : occupation.getColor());
 				g.setFont(new Font("Consolas", Font.PLAIN, FONT()));
 				g.drawString(Integer.toString(troops), l[0] + RAD() - g.getFontMetrics().stringWidth(Integer.toString(troops)) / 2, l[1] + RAD() + FONT() / 4);
 			}

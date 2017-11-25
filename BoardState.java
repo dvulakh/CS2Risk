@@ -36,31 +36,32 @@ public class BoardState {
 			if(t.isAdjacent(territories[i])){
 				if(t.getOccupation() == null)
 					g.setColor(GameBoard.LINE);
-				else if(t.getOccupation() == territories[i].getOccupation())
+				else if(t.getOccupation() == territories[i].getOccupation() && !BOARD.flood)
 					g.setColor(t.getOccupation().getColor());
 				else
 					g.setColor(GameBoard.LINE);
 				((Graphics2D)g).setStroke(new BasicStroke(Territory.RAD() / 5));
 				if(t.getName().equals("Alaska") && territories[i].getName().equals("Kamchatka")){
-					g.drawLine(t.getCLocX(), t.getCLocY(), BOARD.getImgCorner()[0], t.getCLocY());
-					g.drawLine(territories[i].getCLocX(), territories[i].getCLocY(), BOARD.getImgCorner()[0] + BOARD.getImgDim()[0], territories[i].getCLocY());
+					g.drawLine(t.getCLocX(), t.getCLocY(), BOARD.getImgCorner()[0] + Territory.RAD() / 5, t.getCLocY());
+					g.drawLine(territories[i].getCLocX(), territories[i].getCLocY(), BOARD.getImgCorner()[0] + BOARD.getImgDim()[0] - Territory.RAD() / 5, territories[i].getCLocY());
 				}
 				else if(t.getName().equals("Kamchatka") && territories[i].getName().equals("Alaska")){
-					g.drawLine(territories[i].getCLocX(), territories[i].getCLocY(), BOARD.getImgCorner()[0], territories[i].getCLocY());
-					g.drawLine(t.getCLocX(), t.getCLocY(), BOARD.getImgCorner()[0] + BOARD.getImgDim()[0], t.getCLocY());
+					g.drawLine(territories[i].getCLocX(), territories[i].getCLocY(), BOARD.getImgCorner()[0] + Territory.RAD() / 5, territories[i].getCLocY());
+					g.drawLine(t.getCLocX(), t.getCLocY(), BOARD.getImgCorner()[0] + BOARD.getImgDim()[0] - Territory.RAD() / 5, t.getCLocY());
 				}
 				else
 					g.drawLine(t.getCLocX(), t.getCLocY(), territories[i].getCLocX(), territories[i].getCLocY());
 			}
 	}
-	public static void paintGraph(Graphics g){
-		for(int i = 0; i < territories.length; i++)
-			paintAdjacent(g, territories[i]);
-	}
 	public static void paint(Graphics g){
 		
+		//Flood
+		for(Territory t: territories)
+			t.floodTerr(g);
+		
 		//Adjacency graph
-		paintGraph(g);
+		for(Territory t: territories)
+			paintAdjacent(g, t);
 		
 		//Territories
 		for(Territory t: territories)

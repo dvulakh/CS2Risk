@@ -18,6 +18,7 @@ public class Territory {
 	
 	/*** Private Member Variables ***/
 	private Player occupation;
+	private int continent;
 	private boolean cLock;
 	private double[] loc;
 	private String name;
@@ -28,6 +29,7 @@ public class Territory {
 	/*** Constructor ***/
 	public Territory(int i){
 		name = GameBoard.TERRITORY_NAMES[i];
+		continent = GameBoard.CONTINENT[i];
 		loc = GameBoard.LOCATIONS[i];
 		occupation = null;
 		col = BASE_COL;
@@ -47,6 +49,7 @@ public class Territory {
 	public int getTroops(){return troops;}
 	public Color getColor(){return col;}
 	public int getIndx(){return indx;}
+	public int getContinent(){return continent;}
 	//Mutators
 	public void setOccupation(Player p){occupation = p;}
 	public void setLoc(double[] l){loc = l;}
@@ -72,7 +75,7 @@ public class Territory {
 	/*** Statistics Display ***/
 	public String fullStats(){
 		String stat = "";
-		stat += name + "\n";
+		stat += name + "\n" + GameBoard.CONTINENT_NAME[continent] + "\n";
 		stat += (occupation != null ? "occupied by " + occupation.getName() : "not occupied") + "\n";
 		if(troops > 0)
 			stat += troops + " occupying " + (troops == 1 ? "army" : "armies");

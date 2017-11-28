@@ -5,6 +5,7 @@ import java.awt.image.*;
 import java.io.*;
 import javax.imageio.*;
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
 
 public class GameBoard extends JFrame implements MouseListener, MouseMotionListener, WindowListener, ActionListener {
 	private static final long serialVersionUID = 1L;
@@ -175,6 +176,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	private JPanel[] holders;
 	private JButton[] bottomButtons;
 	private JTextArea infoDisplay;
+	private Console sideConsole;
 	//Mouse manipulation
 	private Territory moused;
 	
@@ -213,6 +215,8 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		holders[0] = new JPanel(new GridLayout(bottomButtons.length / 2, 1));
 		holders[1] = new JPanel(new GridLayout(bottomButtons.length / 2, 1));
 		infoDisplay = new JTextArea();
+		infoDisplay.setEditable(false);
+		sideConsole = new Console();
 		for(int i = 0; i < bottomButtons.length; i++){
 			bottomButtons[i] = new myButton(bottomButtonNames[i], MAIN, MOUSE);
 			bottomButtons[i].setForeground(FONT);
@@ -229,6 +233,8 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		bottomControls.add(holders[0]);
 		bottomControls.add(holders[1]);
 		bottomControls.add(infoDisplay);
+		sideControls.setLayout(null);
+		sideControls.add(sideConsole);
 		playerStats.setBackground(MAIN);
 		sideControls.setBackground(Color.GREEN);
 		bottomControls.setBackground(MAIN);
@@ -265,6 +271,8 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		holders[1].setBounds(bottomControls.getBounds().width - holders[0].getBounds().width, 0, holders[0].getBounds().width, bottomControls.getBounds().height);
 		infoDisplay.setBounds(holders[0].getBounds().width, 0, (int)(bottomControls.getBounds().width * INFO_WIDTH), bottomControls.getBounds().height);
 		infoDisplay.setFont(new Font(infoDisplay.getFont().getName(), infoDisplay.getFont().getStyle(), infoDisplay.getBounds().height / 10));
+		sideConsole.setBounds(0, 0, sideControls.getWidth(), sideControls.getHeight() / 2);
+		sideConsole.update();
 	}
 	
 	/*** Load and Resize Image ***/

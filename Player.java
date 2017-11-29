@@ -103,7 +103,7 @@ public abstract class Player {
 			for(int j = 0; j < statDis[i].length; j++){
 				if(i == statDis.length - 1)
 					statDis[i][j].setVerticalAlignment(SwingConstants.TOP);
-				statDis[i][j].setFont(new Font("Consolas", statDis[i][j].getFont().getStyle(), 4 * statDis[i][j].getFont().getSize() / 3));
+				statDis[i][j].setFont(new Font("Consolas", statDis[i][j].getFont().getStyle(), (int)(0.4 * bottomTwo[0].getHeight())));
 				statDis[i][j].setHorizontalAlignment(SwingConstants.CENTER);
 				statDis[i][j].setBackground(GameBoard.MAIN);
 				statDis[i][j].setForeground(GameBoard.FONT);

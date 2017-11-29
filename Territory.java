@@ -64,11 +64,15 @@ public class Territory {
 	
 	/*** Occupy territory with t troops of player p ***/
 	public void occupy(Player p, int t){
-		if(occupation != null)
+		if(occupation != null){
 			occupation.getOccupiedTerritories().remove(this);
+			occupation.setTroops(occupation.getTroops() - troops);
+		}
 		occupation = p;
-		occupation.getOccupiedTerritories().add(this);
-		occupation.setTroops(occupation.getTroops() + t);
+		if(occupation != null){
+			occupation.getOccupiedTerritories().add(this);
+			occupation.setTroops(occupation.getTroops() + t);
+		}
 		troops = t;
 	}
 	
@@ -114,7 +118,7 @@ public class Territory {
 			g.setColor(col);
 			g.fillOval(l[0], l[1], 2 * RAD(), 2 * RAD());
 			if(occupation != null){
-				g.setColor(BoardState.BOARD.flood ? GameBoard.FONT : occupation.getColor());
+				g.setColor(!BoardState.BOARD.flood && col != ATTACK_COL ? occupation.getColor() : GameBoard.FONT);
 				g.setFont(new Font("Consolas", Font.PLAIN, FONT()));
 				g.drawString(Integer.toString(troops), l[0] + RAD() - g.getFontMetrics().stringWidth(Integer.toString(troops)) / 2, l[1] + RAD() + FONT() / 4);
 			}

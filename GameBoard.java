@@ -5,7 +5,6 @@ import java.awt.image.*;
 import java.io.*;
 import javax.imageio.*;
 import javax.swing.*;
-import javax.swing.plaf.ColorUIResource;
 
 public class GameBoard extends JFrame implements MouseListener, MouseMotionListener, WindowListener, ActionListener {
 	private static final long serialVersionUID = 1L;
@@ -149,6 +148,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 			(long)0 | L << 38 | L << 39};
 	public static final double MAP_HEIGHT = 0.8;
 	public static final double INFO_WIDTH = 0.6;
+	public static final double CONSOLE_HEIGHT = MAP_HEIGHT;
 	public static final double PAD = 0.01;
 	
 	/*** Color Scheme ***/
@@ -170,15 +170,19 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	private BufferedImage img;
 	//Controls
 	private String[][] bottomButtonNames = {{"Hide Troop Count", "Show Troop Count"}, {"Show Adjacency Graph", "Hide Adjacency Graph"}, {"Fill by Continent", "Fill by Occupant"}, {"End Phase"}, {"Show Cards", "Hide Cards"}, {"Button 6"}};
+	private String[][] rightButtonNames = {{"Save"}, {"Load"}, {"Pause", "Unpause"}};
 	private JPanel bottomControls;
 	private JPanel sideControls;
 	private JPanel playerStats;
 	private JPanel[] holders;
 	private JButton[] bottomButtons;
+	private JPanel rightHolder;
+	private JButton[] rightButtons;
 	private JTextArea infoDisplay;
 	private Console sideConsole;
 	//Mouse manipulation
 	private Territory moused;
+	private Territory clicked;
 	
 	/*** Constructor ***/
 	public GameBoard() throws IOException {
@@ -229,12 +233,22 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		infoDisplay.setForeground(FONT);
 		infoDisplay.setMargin(new Insets(50, 50, 50, 50));
 		infoDisplay.setFont(new Font("Consolas", Font.PLAIN, 2 * infoDisplay.getFont().getSize()));
+		rightHolder = new JPanel(new GridLayout(rightButtonNames.length, 1));
+		rightButtons = new JButton[rightButtonNames.length];
+		for(int i = 0; i < rightButtonNames.length; i++){
+			rightButtons[i] = new myButton(rightButtonNames[i], MAIN, MOUSE);
+			rightButtons[i].setForeground(FONT);
+			rightButtons[i].setBorder(BorderFactory.createEmptyBorder());
+			rightButtons[i].setFont(new Font("Consolas", Font.PLAIN, 3 * rightButtons[i].getFont().getSize() / 2));
+			rightHolder.add(rightButtons[i]);
+		}
 		bottomControls.setLayout(null);
 		bottomControls.add(holders[0]);
 		bottomControls.add(holders[1]);
 		bottomControls.add(infoDisplay);
 		sideControls.setLayout(null);
 		sideControls.add(sideConsole);
+		sideControls.add(rightHolder);
 		playerStats.setBackground(MAIN);
 		sideControls.setBackground(Color.GREEN);
 		bottomControls.setBackground(MAIN);
@@ -271,7 +285,8 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		holders[1].setBounds(bottomControls.getBounds().width - holders[0].getBounds().width, 0, holders[0].getBounds().width, bottomControls.getBounds().height);
 		infoDisplay.setBounds(holders[0].getBounds().width, 0, (int)(bottomControls.getBounds().width * INFO_WIDTH), bottomControls.getBounds().height);
 		infoDisplay.setFont(new Font(infoDisplay.getFont().getName(), infoDisplay.getFont().getStyle(), infoDisplay.getBounds().height / 10));
-		sideConsole.setBounds(0, 0, sideControls.getWidth(), sideControls.getHeight() / 2);
+		sideConsole.setBounds(0, 0, sideControls.getWidth(), (int)(CONSOLE_HEIGHT * sideControls.getHeight()));
+		rightHolder.setBounds(0, sideConsole.getHeight(), sideControls.getWidth(), sideControls.getHeight() - sideConsole.getHeight());
 		sideConsole.update();
 	}
 	
@@ -304,6 +319,8 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	public void drawGame(Graphics g){
 		resetImage();
 		resetControls();
+		for(Player p: BoardState.players)
+			p.updateStatDisplay();
 		super.paint(g);
 		paintImage(g);
 		BoardState.paint(g);
@@ -360,7 +377,19 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		moused = tMouse;		
 		
 	}
-	public void mouseClicked(MouseEvent arg0) {printCoords();}
+	public void mouseClicked(MouseEvent arg0) {
+		if(clicked == moused && clicked != null){
+			clicked.unlock();
+			clicked.setColor(Territory.MOUSE_COL);
+			clicked = null;
+			return;
+		}
+		clicked = moused;
+		if(clicked != null){
+			clicked.setColor(Territory.ATTACK_COL);
+			clicked.lock();
+		}
+	}
 	public void mouseEntered(MouseEvent arg0) {}
 	public void mouseExited(MouseEvent arg0) {}
 	public void mousePressed(MouseEvent arg0) {}

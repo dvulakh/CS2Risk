@@ -71,12 +71,25 @@ public class Console extends JPanel {
 		//Execute
 		if(s.equals("HELP"))
 			display.append(COMMANDS.toUpperCase());
-		for(Territory t: BoardState.territories)
-			if(s.equals(t.getName().toUpperCase()))
-				display.append(t.fullStats().toUpperCase() + "\n");
-		for(Player p: BoardState.players)
-			if(s.equals(p.getName().toUpperCase()))
-				display.append(p.fullStats().toUpperCase() + "\n");
+		//Split
+		String[] ss = s.split(" ");
+		if(ss.length == 1){
+			for(Territory t: BoardState.territories)
+				if(s.equals(t.getName().toUpperCase()))
+					display.append(t.fullStats().toUpperCase() + "\n");
+			for(Player p: BoardState.players)
+				if(s.equals(p.getName().toUpperCase()))
+					display.append(p.fullStats().toUpperCase() + "\n");
+		}
+		if(ss[0].equals("NUKE")){
+			for(Player p: BoardState.players)
+				if(ss[1].equals(p.getName().toUpperCase())){
+					display.append(ss[1] + " NUKED" + "\n");
+					while(p.getOccupiedTerritories().size() > 0)
+						p.getOccupiedTerritories().getFirst().occupy(null,  0);
+				}
+			BoardState.BOARD.repaint();
+		}
 	}
 
 }

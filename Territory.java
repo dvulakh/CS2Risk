@@ -18,6 +18,7 @@ public class Territory {
 	
 	/*** Private Member Variables ***/
 	private Player occupation;
+	private int continent;
 	private boolean cLock;
 	private double[] loc;
 	private String name;
@@ -28,6 +29,7 @@ public class Territory {
 	/*** Constructor ***/
 	public Territory(int i){
 		name = GameBoard.TERRITORY_NAMES[i];
+		continent = GameBoard.CONTINENT[i];
 		loc = GameBoard.LOCATIONS[i];
 		occupation = null;
 		col = BASE_COL;
@@ -47,6 +49,7 @@ public class Territory {
 	public int getTroops(){return troops;}
 	public Color getColor(){return col;}
 	public int getIndx(){return indx;}
+	public int getContinent(){return continent;}
 	//Mutators
 	public void setOccupation(Player p){occupation = p;}
 	public void setLoc(double[] l){loc = l;}
@@ -61,18 +64,24 @@ public class Territory {
 	
 	/*** Occupy territory with t troops of player p ***/
 	public void occupy(Player p, int t){
-		if(occupation != null)
+		if(occupation != null){
 			occupation.getOccupiedTerritories().remove(this);
+			occupation.setTroops(occupation.getTroops() - troops);
+			occupation.updateStatDisplay();
+		}
 		occupation = p;
-		occupation.getOccupiedTerritories().add(this);
-		occupation.setTroops(occupation.getTroops() + t);
+		if(occupation != null){
+			occupation.getOccupiedTerritories().add(this);
+			occupation.setTroops(occupation.getTroops() + t);
+			occupation.updateStatDisplay();
+		}
 		troops = t;
 	}
 	
 	/*** Statistics Display ***/
 	public String fullStats(){
 		String stat = "";
-		stat += name + "\n";
+		stat += name + "\n" + GameBoard.CONTINENT_NAME[continent] + "\n";
 		stat += (occupation != null ? "occupied by " + occupation.getName() : "not occupied") + "\n";
 		if(troops > 0)
 			stat += troops + " occupying " + (troops == 1 ? "army" : "armies");
@@ -111,7 +120,7 @@ public class Territory {
 			g.setColor(col);
 			g.fillOval(l[0], l[1], 2 * RAD(), 2 * RAD());
 			if(occupation != null){
-				g.setColor(BoardState.BOARD.flood ? GameBoard.FONT : occupation.getColor());
+				g.setColor(!BoardState.BOARD.flood && col != ATTACK_COL ? occupation.getColor() : GameBoard.FONT);
 				g.setFont(new Font("Consolas", Font.PLAIN, FONT()));
 				g.drawString(Integer.toString(troops), l[0] + RAD() - g.getFontMetrics().stringWidth(Integer.toString(troops)) / 2, l[1] + RAD() + FONT() / 4);
 			}

@@ -1,31 +1,75 @@
 
 import java.awt.*;
+import java.util.*;
 
-public class BoardState {
+public abstract class BoardState {
 	
 	/*** Game Information ***/
+	public static final String[] PHASE_NAMES = {"Select a Territory", "Reinforce", "Reinforce", "Attack", "Fortify"};
+	public static final int CHOOSE_TERR = 0;
+	public static final int INITIAL_REINF = 1;
+	public static final int REINF = 2;
+	public static final int ATTACK = 3;
+	public static final int FORTIFY = 4;
 	public static final int MAX_PLAYER = 6;
 	public static Territory[] territories;
 	public static Player[] players;
 	public static GameBoard BOARD;
+	public static int startTroops;
+	public static int turn;
+	public static int phase;
+	public static Player pTurn(){return players[turn % players.length];}
 	
 	/*** Set-Up ***/
 	public static void startGame(){
+		//Turn
+		turn = 0;
 		//Territories
 		territories = new Territory[GameBoard.LOCATIONS.length];
 		for(int i = 0; i < territories.length; i++)
 			territories[i] = new Territory(i);
 		//Player test
 		players = new Player[6];
+		startTroops = 15;
 		players[0] = new HumanPlayer(1, "Alice", Color.RED);
 		players[1] = new HumanPlayer(2, "Bob", Color.GREEN);
 		players[2] = new HumanPlayer(3, "Cate", Color.MAGENTA);
 		players[3] = new HumanPlayer(4, "Daniel", Color.CYAN);
 		players[4] = new HumanPlayer(5, "Eli", Color.BLUE);
 		players[5] = new HumanPlayer(6, "Falstaff", Color.ORANGE);
-		//Territory test - not evenly distributed
+		//Distribute territories
+		randTerr();
+		phase = 1;
+	}
+	public static void randTerr(){
+		ArrayList<Territory> ter = new ArrayList<Territory>();
 		for(Territory t: territories)
-			t.occupy(players[(int)(Math.random() * players.length)], (int)(Math.random() * 20) + 1);
+			ter.add(t);
+		while(ter.size() > 0){
+			for(Player p: players){
+				int i = (int)(Math.random() * ter.size());
+				ter.get(i).occupy(p, 1);
+				ter.remove(i);
+				if(ter.size() <= 0)
+					return;
+			}
+		}
+	}
+	
+	/*** Process Turns ***/
+	public static void nxtTurn(){
+		turn++;
+		if(phase == INITIAL_REINF){
+			int i = 0;
+			while(pTurn().getTroops() >= startTroops && i <= players.length){
+				turn++;
+				i++;
+			}
+			if(pTurn().getTroops() >= startTroops){
+				turn = 0;
+				phase = 2;
+			}
+		}
 	}
 	
 	/*** Draw Board ***/

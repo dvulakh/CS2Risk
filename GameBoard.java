@@ -13,6 +13,10 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	public static final long L = 1; 
 	public static final String NAME = "RISK: The Game of World Domination";
 	public static final String[] TERRITORY_NAMES = {"Alaska", "Alberta", "Central America", "Eastern United States", "Greenland", "Northwest Territory", "Ontario", "Quebec", "Western United States", "Argentina", "Brazil", "Peru", "Venezuela", "Great Britain", "Iceland", "Northern Europe", "Scandinavia", "Southern Europe", "Ukraine", "Western Europe", "Congo", "East Africa", "Egypt", "Madagascar", "North Africa", "South Africa", "Afghanistan", "China", "India", "Irkutsk", "Japan", "Kamchatka", "Middle East", "Mongolia", "Siam", "Siberia", "Ural", "Yakutsk", "Eastern Australia", "Indonesia", "New Guinea", "Western Australia"};
+	public static final int[] CONTINENT = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5};
+	public static final int[] CONTINENT_COUNT = {7, 4, 9, 6, 12, 4};
+	public static final int[] CONTINENT_BONUS = {5, 2, 5, 3, 7, 2};
+	public static final String[] CONTINENT_NAME = {"North America", "South America", "Europe", "Africa", "Asia", "Australia"};
 	public static final double[][] LOCATIONS = {
 			{0.072, 0.185},
 			{0.161, 0.2727},
@@ -144,6 +148,8 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 			(long)0 | L << 38 | L << 39};
 	public static final double MAP_HEIGHT = 0.8;
 	public static final double INFO_WIDTH = 0.6;
+	public static final double INFO_HEIGHT = 0.8;
+	public static final double CONSOLE_HEIGHT = 0.8 - 0.2 / 3;
 	public static final double PAD = 0.01;
 	
 	/*** Color Scheme ***/
@@ -165,14 +171,20 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	private BufferedImage img;
 	//Controls
 	private String[][] bottomButtonNames = {{"Hide Troop Count", "Show Troop Count"}, {"Show Adjacency Graph", "Hide Adjacency Graph"}, {"Fill by Continent", "Fill by Occupant"}, {"End Phase"}, {"Show Cards", "Hide Cards"}, {"Button 6"}};
+	private String[][] rightButtonNames = {{"Pause", "Unpause"}, {"Load"}, {"Save"}, {"Exit"}};
 	private JPanel bottomControls;
 	private JPanel sideControls;
 	private JPanel playerStats;
 	private JPanel[] holders;
 	private JButton[] bottomButtons;
+	private JPanel rightHolder;
+	private JButton[] rightButtons;
 	private JTextArea infoDisplay;
+	private JLabel turnDisplay;
+	private Console sideConsole;
 	//Mouse manipulation
 	private Territory moused;
+	private Territory clicked;
 	
 	/*** Constructor ***/
 	public GameBoard() throws IOException {
@@ -209,6 +221,9 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		holders[0] = new JPanel(new GridLayout(bottomButtons.length / 2, 1));
 		holders[1] = new JPanel(new GridLayout(bottomButtons.length / 2, 1));
 		infoDisplay = new JTextArea();
+		infoDisplay.setEditable(false);
+		sideConsole = new Console();
+		turnDisplay = new JLabel();
 		for(int i = 0; i < bottomButtons.length; i++){
 			bottomButtons[i] = new myButton(bottomButtonNames[i], MAIN, MOUSE);
 			bottomButtons[i].setForeground(FONT);
@@ -216,17 +231,33 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 			bottomButtons[i].setFont(new Font("Consolas", Font.PLAIN, 3 * bottomButtons[i].getFont().getSize() / 2));
 			holders[i / (bottomButtons.length / 2)].add(bottomButtons[i]);
 		}
-		infoDisplay.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+		turnDisplay.setHorizontalAlignment(SwingConstants.CENTER);
+		turnDisplay.setForeground(FONT);
+		turnDisplay.setBorder(BorderFactory.createLineBorder(FONT));
+		infoDisplay.setBorder(BorderFactory.createLineBorder(FONT));
 		infoDisplay.setBackground(MAIN);
 		infoDisplay.setForeground(FONT);
 		infoDisplay.setMargin(new Insets(50, 50, 50, 50));
 		infoDisplay.setFont(new Font("Consolas", Font.PLAIN, 2 * infoDisplay.getFont().getSize()));
+		rightHolder = new JPanel(new GridLayout(rightButtonNames.length, 1));
+		rightButtons = new JButton[rightButtonNames.length];
+		for(int i = 0; i < rightButtonNames.length; i++){
+			rightButtons[i] = new myButton(rightButtonNames[i], MAIN, MOUSE);
+			rightButtons[i].setForeground(FONT);
+			rightButtons[i].setBorder(BorderFactory.createEmptyBorder());
+			rightButtons[i].setFont(new Font("Consolas", Font.PLAIN, 3 * rightButtons[i].getFont().getSize() / 2));
+			rightHolder.add(rightButtons[i]);
+		}
 		bottomControls.setLayout(null);
+		bottomControls.add(turnDisplay);
 		bottomControls.add(holders[0]);
 		bottomControls.add(holders[1]);
 		bottomControls.add(infoDisplay);
+		sideControls.setLayout(null);
+		sideControls.add(sideConsole);
+		sideControls.add(rightHolder);
 		playerStats.setBackground(MAIN);
-		sideControls.setBackground(Color.GREEN);
+		sideControls.setBackground(MAIN);
 		bottomControls.setBackground(MAIN);
 		add(playerStats);
 		add(sideControls);
@@ -259,8 +290,15 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		bottomControls.setBounds((screenDim[0] - imgDim[0]) / 2, imgDim[1], imgDim[0], screenDim[1] - imgDim[1]);
 		holders[0].setBounds(0, 0, (int)(bottomControls.getBounds().width * (1 - INFO_WIDTH) / 2), bottomControls.getBounds().height);
 		holders[1].setBounds(bottomControls.getBounds().width - holders[0].getBounds().width, 0, holders[0].getBounds().width, bottomControls.getBounds().height);
-		infoDisplay.setBounds(holders[0].getBounds().width, 0, (int)(bottomControls.getBounds().width * INFO_WIDTH), bottomControls.getBounds().height);
+		infoDisplay.setBounds(holders[0].getBounds().width, (int)((1 - INFO_HEIGHT) * bottomControls.getHeight()), (int)(bottomControls.getBounds().width * INFO_WIDTH), (int)(INFO_HEIGHT * bottomControls.getBounds().height));
 		infoDisplay.setFont(new Font(infoDisplay.getFont().getName(), infoDisplay.getFont().getStyle(), infoDisplay.getBounds().height / 10));
+		sideConsole.setBounds(0, 0, sideControls.getWidth(), (int)(CONSOLE_HEIGHT * sideControls.getHeight()));
+		rightHolder.setBounds(0, sideConsole.getHeight(), sideControls.getWidth(), sideControls.getHeight() - sideConsole.getHeight());
+		turnDisplay.setBounds(infoDisplay.getBounds().x, 0, infoDisplay.getBounds().width, infoDisplay.getBounds().y);
+		turnDisplay.setForeground(BoardState.pTurn().getColor());
+		turnDisplay.setFont(new Font("Consolas", Font.BOLD, infoDisplay.getFont().getSize()));
+		turnDisplay.setText((BoardState.pTurn().getName() + " - " + BoardState.PHASE_NAMES[BoardState.phase]).toUpperCase());
+		sideConsole.update();
 	}
 	
 	/*** Load and Resize Image ***/
@@ -292,6 +330,8 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	public void drawGame(Graphics g){
 		resetImage();
 		resetControls();
+		for(Player p: BoardState.players)
+			p.updateStatDisplay();
 		super.paint(g);
 		paintImage(g);
 		BoardState.paint(g);
@@ -302,9 +342,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	public int[] getImgCorner(){return imgCorner;}
 	public int[] getImgDim(){return imgDim;}
 	public BufferedImage getImg(){return img;}
-	//Mutators
-	public void setImgCorner(int[] l){imgCorner = l;}
-	public void setImgDim(int[] d){imgDim = d;}
+	public JTextArea getInfoDisplay(){return infoDisplay;}
 	
 	/*** Save Game ***/
 	public boolean save() {
@@ -350,7 +388,29 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		moused = tMouse;		
 		
 	}
-	public void mouseClicked(MouseEvent arg0) {printCoords();}
+	public void mouseClicked(MouseEvent arg0) {
+		if(BoardState.phase == BoardState.INITIAL_REINF){
+			if(moused != null && moused.getOccupation() == BoardState.pTurn()){
+				moused.occupy(moused.getOccupation(), moused.getTroops() + 1);
+				moused.paint(getGraphics());
+				BoardState.nxtTurn();
+				resetControls();
+				playerStats.repaint();
+			}
+			return;
+		}
+		if(clicked != null){
+			clicked.unlock();
+			clicked.setColor(clicked == moused ? Territory.MOUSE_COL : Territory.BASE_COL);
+			clicked = null;
+			return;
+		}
+		clicked = moused;
+		if(clicked != null){
+			clicked.setColor(Territory.ATTACK_COL);
+			clicked.lock();
+		}
+	}
 	public void mouseEntered(MouseEvent arg0) {}
 	public void mouseExited(MouseEvent arg0) {}
 	public void mousePressed(MouseEvent arg0) {}
@@ -388,6 +448,10 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 			paintImage(getGraphics());
 			BoardState.paint(getGraphics());
 		}
+		
+		//Exit
+		if(e.getSource() == rightButtons[3])
+			dispose();
 		
 	}
 	

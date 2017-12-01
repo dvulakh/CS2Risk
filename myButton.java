@@ -25,7 +25,7 @@ public class myButton extends JButton implements MouseListener {
 	}
 
 	/*** Change colors when mouse enters and clicks ***/
-	public void mouseClicked(MouseEvent arg0) {BoardState.BOARD.actionPerformed(new ActionEvent(this, 0, ""));}
+	public void mouseClicked(MouseEvent arg0) {}
 	public void mouseEntered(MouseEvent arg0) {setBackground(col2);}
 	public void mouseExited(MouseEvent arg0) {setBackground(col1);}
 	public void mousePressed(MouseEvent arg0) {}
@@ -33,6 +33,7 @@ public class myButton extends JButton implements MouseListener {
 		setBackground(col2);
 		indx = (indx + 1) % txt.length;
 		setText(txt[indx]);
+		BoardState.BOARD.actionPerformed(new ActionEvent(this, 0, ""));
 	}
 
 }

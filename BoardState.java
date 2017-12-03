@@ -16,6 +16,7 @@ public abstract class BoardState {
 	public static Player[] players;
 	public static GameBoard BOARD;
 	public static int startTroops;
+	public static int reinf;
 	public static int turn;
 	public static int phase;
 	public static Player pTurn(){return players[turn % players.length];}
@@ -30,7 +31,7 @@ public abstract class BoardState {
 			territories[i] = new Territory(i);
 		//Player test
 		players = new Player[6];
-		startTroops = 15;
+		startTroops = 10;
 		players[0] = new HumanPlayer(1, "Alice", Color.RED);
 		players[1] = new HumanPlayer(2, "Bob", Color.GREEN);
 		players[2] = new HumanPlayer(3, "Cate", Color.MAGENTA);
@@ -67,8 +68,12 @@ public abstract class BoardState {
 			}
 			if(pTurn().getTroops() >= startTroops){
 				turn = 0;
-				phase = 2;
+				phase = REINF;
 			}
+		}
+		if(phase == REINF){
+			reinf = Math.max(pTurn().getOccupiedTerritories().size() / 3, 3) + pTurn().continentBonus();
+			pTurn().placeReinforcements();
 		}
 	}
 	

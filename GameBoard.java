@@ -183,8 +183,8 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	private JLabel turnDisplay;
 	private Console sideConsole;
 	//Mouse manipulation
-	private Territory moused;
-	private Territory clicked;
+	public Territory moused;
+	public Territory clicked;
 	
 	/*** Constructor ***/
 	public GameBoard() throws IOException {
@@ -298,6 +298,10 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		turnDisplay.setForeground(BoardState.pTurn().getColor());
 		turnDisplay.setFont(new Font("Consolas", Font.BOLD, infoDisplay.getFont().getSize()));
 		turnDisplay.setText((BoardState.pTurn().getName() + " - " + BoardState.PHASE_NAMES[BoardState.phase]).toUpperCase());
+		if(BoardState.phase == BoardState.INITIAL_REINF)
+			turnDisplay.setText((turnDisplay.getText() + " (" + (BoardState.startTroops - BoardState.pTurn().getTroops()) + ((BoardState.startTroops - BoardState.pTurn().getTroops()) == 1 ? " army " : " armies ") + "remaining)").toUpperCase());
+		if(BoardState.phase == BoardState.REINF)
+			turnDisplay.setText((turnDisplay.getText() + " (" + BoardState.reinf + (BoardState.reinf == 1 ? " army " : " armies ") + "remaining)").toUpperCase());
 		sideConsole.update();
 	}
 	
@@ -323,6 +327,13 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		try{
 			g.drawImage(img, imgCorner[0], imgCorner[1], imgDim[0], imgDim[1], MAIN, null);
 		}catch(Exception e){JOptionPane.showMessageDialog(this, "Map Drawing Error: " + e);}
+	}
+	public void paintControls(Graphics g){
+		resetImage();
+		resetControls();
+		playerStats.repaint();
+		bottomControls.repaint();
+		sideControls.repaint();
 	}
 	public void paintComponent(Graphics g){repaint();}
 	public void repaint(){drawGame(getGraphics());}
@@ -390,25 +401,14 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	}
 	public void mouseClicked(MouseEvent arg0) {
 		if(BoardState.phase == BoardState.INITIAL_REINF){
-			if(moused != null && moused.getOccupation() == BoardState.pTurn()){
-				moused.occupy(moused.getOccupation(), moused.getTroops() + 1);
-				moused.paint(getGraphics());
-				BoardState.nxtTurn();
-				resetControls();
-				playerStats.repaint();
-			}
+			clicked = moused;
+			BoardState.pTurn().placeInitialReinforcements();
 			return;
 		}
-		if(clicked != null){
-			clicked.unlock();
-			clicked.setColor(clicked == moused ? Territory.MOUSE_COL : Territory.BASE_COL);
-			clicked = null;
+		if(BoardState.phase == BoardState.REINF){
+			clicked = moused;
+			BoardState.pTurn().placeReinforcements();
 			return;
-		}
-		clicked = moused;
-		if(clicked != null){
-			clicked.setColor(Territory.ATTACK_COL);
-			clicked.lock();
 		}
 	}
 	public void mouseEntered(MouseEvent arg0) {}

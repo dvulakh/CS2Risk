@@ -75,8 +75,15 @@ public abstract class Player {
 	public void setTeam(int t){team = t;}
 	
 	/*** Continents Controlled ***/
-	public int ContinentBonus(){
-		return 0;
+	public int continentBonus(){
+		int b = 0;
+		int[] c = new int[GameBoard.CONTINENT_COUNT.length];
+		for(Territory t: ter)
+			c[t.getContinent()]++;
+		for(int i = 0; i < c.length; i++)
+			if(c[i] == GameBoard.CONTINENT_COUNT[i])
+				b += GameBoard.CONTINENT_BONUS[i];
+		return b;
 	}
 	
 	/*** Statistics Display ***/
@@ -135,6 +142,7 @@ public abstract class Player {
 	/*** Abstract methods ***/
 	//Placing troops in early game
 	public abstract void selectTerritory();
+	public abstract void placeInitialReinforcements();
 	//Taking a turn
 	public abstract void placeReinforcements();
 	public abstract void makeAttacks();

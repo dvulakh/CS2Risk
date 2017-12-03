@@ -7,7 +7,7 @@ public class Console extends JPanel {
 	private static final long serialVersionUID = 1L;
 	
 	/*** Private member variables ***/
-	private static final String COMMANDS = "help: print command list\n[player]: print player stats\n[territory]: print territory stats\n";
+	private static final String COMMANDS = "help: print command list\n[player]: print player stats\n[territory]: place army in territory\n";
 	private JScrollPane scroller;
 	private JTextArea display;
 	private JTextField cmd;
@@ -73,23 +73,23 @@ public class Console extends JPanel {
 			display.append(COMMANDS.toUpperCase());
 		//Split
 		String[] ss = s.split(" ");
-		if(ss.length == 1){
-			for(Territory t: BoardState.territories)
-				if(s.equals(t.getName().toUpperCase()))
-					display.append(t.fullStats().toUpperCase() + "\n");
-			for(Player p: BoardState.players)
-				if(s.equals(p.getName().toUpperCase()))
-					display.append(p.fullStats().toUpperCase() + "\n");
-		}
-		if(ss[0].equals("NUKE")){
-			for(Player p: BoardState.players)
-				if(ss[1].equals(p.getName().toUpperCase())){
-					display.append(ss[1] + " NUKED" + "\n");
-					while(p.getOccupiedTerritories().size() > 0)
-						p.getOccupiedTerritories().getFirst().occupy(null,  0);
+		if(ss.length < 1)
+			return;
+		for(Territory t: BoardState.territories)
+			if(s.equals(t.getName().toUpperCase())){
+				BoardState.BOARD.clicked = t;
+				if(BoardState.phase == BoardState.INITIAL_REINF){
+					BoardState.pTurn().placeInitialReinforcements();
+					display.append("reinforcements arrived\n".toUpperCase());
 				}
-			BoardState.BOARD.repaint();
-		}
+				if(BoardState.phase == BoardState.REINF){
+					BoardState.pTurn().placeReinforcements();
+					display.append("reinforcements arrived\n".toUpperCase());
+				}
+			}
+		for(Player p: BoardState.players)
+			if(s.equals(p.getName().toUpperCase()))
+				display.append(p.fullStats().toUpperCase() + "\n");
 	}
 
 }

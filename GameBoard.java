@@ -182,6 +182,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	private JTextArea infoDisplay;
 	private JLabel turnDisplay;
 	private Console sideConsole;
+	private AttackMenu attack;
 	//Mouse manipulation
 	public Territory moused;
 	public Territory clicked;
@@ -346,7 +347,20 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		super.paint(g);
 		paintImage(g);
 		BoardState.paint(g);
+		if(attack != null)
+			attack.repaint();
 	}
+	public void setAttackMenu(AttackMenu a){
+		attack = a;
+		add(attack);
+		attack.reset();
+		attack.repaint();
+	}
+	public void deleteAttackMenu(){
+		attack = null;
+		remove(attack);
+	}
+	
 	
 	/*** Accessors & Mutators ***/
 	//Accessors
@@ -395,6 +409,8 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 			}
 			else
 				infoDisplay.setText("");
+			if(attack != null)
+				attack.repaint();
 		}
 		moused = tMouse;		
 		
@@ -408,6 +424,11 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		if(BoardState.phase == BoardState.REINF){
 			clicked = moused;
 			BoardState.pTurn().placeReinforcements();
+			return;
+		}
+		if(BoardState.phase == BoardState.ATTACK){
+			clicked = moused;
+			BoardState.pTurn().makeAttacks();
 			return;
 		}
 	}

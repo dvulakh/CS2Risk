@@ -1,8 +1,12 @@
 
 import java.awt.*;
 
-public class HumanPlayer extends Player {
+import javax.swing.JOptionPane;
 
+public class HumanPlayer extends Player {
+	
+	private Territory attacker;
+	
 	/*** Constructor ***/
 	public HumanPlayer(int i, String s, Color c) {super(i, s, c);}
 
@@ -32,7 +36,23 @@ public class HumanPlayer extends Player {
 			BoardState.BOARD.clicked = null;
 		}
 	}
-	public void makeAttacks() {}
+	public void makeAttacks() {
+		if(attacker == null){
+			if(BoardState.BOARD.clicked != null && BoardState.BOARD.clicked.getOccupation() == this){
+				attacker = BoardState.BOARD.clicked;
+				attacker.setColor(Territory.ATTACK_COL);
+				attacker.lock();
+			}
+		}
+		else{
+			if(BoardState.BOARD.clicked != null && BoardState.BOARD.clicked.getOccupation() != this && BoardState.BOARD.clicked.isAdjacent(attacker)){
+				BoardState.BOARD.setAttackMenu(new AttackMenu(attacker, BoardState.BOARD.clicked));
+				JOptionPane.showMessageDialog(BoardState.BOARD, "Attack");
+				attacker.unlock();
+				attacker.setColor(Territory.BASE_COL);
+			}
+		}
+	}
 	public void maneuvers() {}
 	public void turnInCards() {}
 

@@ -15,7 +15,7 @@ public class myButton extends JButton implements MouseListener {
 	/*** New Constructor ***/
 	public myButton(String[] toggleText, Color c1, Color c2){
 		addMouseListener(this);
-		setText(toggleText[0]);
+		setText(toggleText[0].toUpperCase());
 		setFocusPainted(false);
 		setBackground(c1);
 		txt = toggleText;
@@ -32,7 +32,7 @@ public class myButton extends JButton implements MouseListener {
 	public void mouseReleased(MouseEvent arg0) {
 		setBackground(col2);
 		indx = (indx + 1) % txt.length;
-		setText(txt[indx]);
+		setText(txt[indx].toUpperCase());
 		BoardState.BOARD.actionPerformed(new ActionEvent(this, 0, ""));
 	}
 

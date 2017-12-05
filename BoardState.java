@@ -31,7 +31,7 @@ public abstract class BoardState {
 			territories[i] = new Territory(i);
 		//Player test
 		players = new Player[6];
-		startTroops = 10;
+		startTroops = 8;
 		players[0] = new HumanPlayer(1, "Alice", Color.RED);
 		players[1] = new HumanPlayer(2, "Bob", Color.GREEN);
 		players[2] = new HumanPlayer(3, "Cate", Color.MAGENTA);

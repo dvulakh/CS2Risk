@@ -92,16 +92,16 @@ public abstract class Player {
 		//Name
 		statDis[0][0].setBackground(GameBoard.MAIN);
 		statDis[0][0].setForeground(col);
-		statDis[0][0].setText(indx + " " + name);
+		statDis[0][0].setText(indx + " " + name.toUpperCase());
 		statDis[0][0].setFont(new Font("Consolas", Font.BOLD, BoardState.BOARD.screenDim[1] / BoardState.MAX_PLAYER / 4));
 		//Numbers
 		statDis[1][0].setText(Integer.toString(ter.size()));
 		statDis[1][1].setText(Integer.toString(troop));
 		statDis[1][2].setText(team > 0 ? Integer.toString(team) : "---");
 		//Labels
-		statDis[2][0].setText("Occupied");
-		statDis[2][1].setText("Armies");
-		statDis[2][2].setText("Team");
+		statDis[2][0].setText("Occupied".toUpperCase());
+		statDis[2][1].setText("Armies".toUpperCase());
+		statDis[2][2].setText("Team".toUpperCase());
 		//Color
 		bottomTwo[0].setBackground(GameBoard.MAIN);
 		bottomTwo[1].setBackground(GameBoard.MAIN);
@@ -116,7 +116,6 @@ public abstract class Player {
 				statDis[i][j].setForeground(GameBoard.FONT);
 			}
 	}
-	//Return full stats
 	public String fullStats(){
 		String stat = "";
 		stat += "player " + indx + ": " + name + " - " + getPlayerType() + "\n";

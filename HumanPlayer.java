@@ -1,8 +1,6 @@
 
 import java.awt.*;
 
-import javax.swing.JOptionPane;
-
 public class HumanPlayer extends Player {
 	
 	private Territory attacker;
@@ -38,7 +36,7 @@ public class HumanPlayer extends Player {
 	}
 	public void makeAttacks() {
 		if(attacker == null){
-			if(BoardState.BOARD.clicked != null && BoardState.BOARD.clicked.getOccupation() == this){
+			if(BoardState.BOARD.clicked != null && BoardState.BOARD.clicked.getOccupation() == this && BoardState.BOARD.clicked.getTroops() > 1){
 				attacker = BoardState.BOARD.clicked;
 				attacker.setColor(Territory.ATTACK_COL);
 				attacker.lock();
@@ -46,10 +44,12 @@ public class HumanPlayer extends Player {
 		}
 		else{
 			if(BoardState.BOARD.clicked != null && BoardState.BOARD.clicked.getOccupation() != this && BoardState.BOARD.clicked.isAdjacent(attacker)){
-				BoardState.BOARD.setAttackMenu(new AttackMenu(attacker, BoardState.BOARD.clicked));
-				JOptionPane.showMessageDialog(BoardState.BOARD, "Attack");
 				attacker.unlock();
 				attacker.setColor(Territory.BASE_COL);
+				BoardState.BOARD.getInfoDisplay().setText("");
+				BoardState.BOARD.clicked.setColor(Territory.BASE_COL);
+				BoardState.BOARD.setAttackMenu(new AttackMenu(attacker, BoardState.BOARD.clicked));
+				attacker = null;
 			}
 		}
 	}

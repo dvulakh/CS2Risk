@@ -117,10 +117,13 @@ public class Territory {
 	public void paint(Graphics g){
 		if(BoardState.BOARD.showCount){
 			int[] l = {(int)(BoardState.BOARD.getImgCorner()[0] + loc[0] * BoardState.BOARD.getImgDim()[0] - RAD()), (int)(BoardState.BOARD.getImgCorner()[1] + loc[1] * BoardState.BOARD.getImgDim()[1] - RAD())};
-			g.setColor(col);
+			if(col != ATTACK_COL || (!BoardState.BOARD.flood && BoardState.phase == BoardState.ATTACK))
+				g.setColor(col);
 			g.fillOval(l[0], l[1], 2 * RAD(), 2 * RAD());
 			if(occupation != null){
 				g.setColor(!BoardState.BOARD.flood && col != ATTACK_COL ? occupation.getColor() : GameBoard.FONT);
+				if(BoardState.BOARD.flood && BoardState.phase == BoardState.ATTACK && col == ATTACK_COL)
+					g.setColor(ATTACK_COL);
 				g.setFont(new Font("Consolas", Font.PLAIN, FONT()));
 				g.drawString(Integer.toString(troops), l[0] + RAD() - g.getFontMetrics().stringWidth(Integer.toString(troops)) / 2, l[1] + RAD() + FONT() / 4);
 			}

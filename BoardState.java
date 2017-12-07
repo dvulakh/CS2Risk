@@ -19,12 +19,15 @@ public abstract class BoardState {
 	public static int reinf;
 	public static int turn;
 	public static int phase;
+	public static int[] dice;
 	public static Player pTurn(){return players[turn % players.length];}
 	
 	/*** Set-Up ***/
 	public static void startGame(){
 		//Turn
 		turn = 0;
+		//Dice
+		dice = new int[5];
 		//Territories
 		territories = new Territory[GameBoard.LOCATIONS.length];
 		for(int i = 0; i < territories.length; i++)

@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
 import java.io.*;
+
 import javax.imageio.*;
 import javax.swing.*;
 
@@ -357,8 +358,8 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		attack.repaint();
 	}
 	public void deleteAttackMenu(){
+		attack.setVisible(false);
 		attack = null;
-		remove(attack);
 	}
 	
 	
@@ -397,6 +398,8 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 
 		//Check territories
 		Territory tMouse = null;
+		if(attack != null)
+			return;
 		for(Territory t: BoardState.territories)
 			if(Math.sqrt(Math.pow(getMousePosition().getX() - t.getCLocX(), 2) + Math.pow(getMousePosition().getY() - t.getCLocY(), 2)) <= Territory.RAD())
 				tMouse = t;
@@ -426,7 +429,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 			BoardState.pTurn().placeReinforcements();
 			return;
 		}
-		if(BoardState.phase == BoardState.ATTACK){
+		if(BoardState.phase == BoardState.ATTACK && attack == null){
 			clicked = moused;
 			BoardState.pTurn().makeAttacks();
 			return;
@@ -473,6 +476,14 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		//Exit
 		if(e.getSource() == rightButtons[3])
 			dispose();
+		
+		//Retreat
+		if(attack != null && e.getSource() == attack.buttons[0]){
+			deleteAttackMenu();
+			setState(Frame.ICONIFIED);
+			setState(Frame.NORMAL);
+			return;
+		}
 		
 	}
 	

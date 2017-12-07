@@ -1,23 +1,19 @@
 
-import java.awt.event.*;
 import java.awt.*;
-
 import javax.swing.*;
-import javax.swing.text.StyleConstants;
 
-public class AttackMenu extends JPanel implements ActionListener {
+public class AttackMenu extends JPanel {
 	private static final long serialVersionUID = 1L;
 	
 	/*** AttackStats ***/
 	private Territory attacker;
 	private Territory defender;
 	private int[] losses;
-	private int[] dieVals;
 	
 	/*** Component proportions ***/
 	public static final double MY_HEIGHT = 1.0 / 3;
 	public static final double MY_WIDTH = 1.0 / 3;
-	public static final double LABEL_HEIGHT = 1.0 / 3;
+	public static final double LABEL_HEIGHT = 0.25;
 	public static final double BAR_HEIGHT = 0.1;
 	public static final double DIE_HEIGHT = 0.5 / 3;
 	public static final double LOSS_HEIGHT = 0.05;
@@ -30,7 +26,7 @@ public class AttackMenu extends JPanel implements ActionListener {
 	private JLabel[] troopCount;
 	private JLabel[] lossDis;
 	private JPanel buttonHolder;
-	private JButton[] buttons;
+	public JButton[] buttons;
 	
 	/*** Constructor ***/
 	public AttackMenu(Territory a, Territory d) {
@@ -38,7 +34,6 @@ public class AttackMenu extends JPanel implements ActionListener {
 		attacker = a;
 		defender = d;
 		losses = new int[2];
-		dieVals = new int[5];
 		//Initilaize Components
 		setLayout(null);
 		setBackground(GameBoard.MAIN);
@@ -51,7 +46,7 @@ public class AttackMenu extends JPanel implements ActionListener {
 		buttonHolder.setBorder(BorderFactory.createLineBorder(GameBoard.FONT));
 		buttons = new JButton[buttonNames.length];
 		for(int i = 0; i < 5; i++){
-			dice[i] = new JLabel();
+			dice[i] = new JLabel("-", SwingConstants.CENTER);
 			dice[i].setBackground(GameBoard.MAIN);
 			dice[i].setBorder(BorderFactory.createLineBorder(GameBoard.FONT));
 			dice[i].setForeground(GameBoard.FONT);
@@ -61,14 +56,15 @@ public class AttackMenu extends JPanel implements ActionListener {
 		}
 		for(int i = 0; i < 2; i++){
 			labels[i] = new JTextArea();
-			labels[i].setBackground(GameBoard.MAIN);
+			labels[i].setOpaque(false);
+			labels[i].setEditable(false);
 			add(labels[i]);
 		}
-		labels[0].setForeground(attacker.getColor());
-		labels[1].setForeground(defender.getColor());
-		labels[1].setAlignmentX(StyleConstants.ALIGN_RIGHT);
+		labels[0].setForeground(attacker.getOccupation().getColor());
+		labels[1].setForeground(defender.getOccupation().getColor());
+		labels[1].setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		for(int i = 0; i < 2; i++){
-			troopCount[i] = new JLabel();
+			troopCount[i] = new JLabel("", SwingConstants.CENTER);
 			troopCount[i].setBackground(GameBoard.MAIN);
 			add(troopCount[i]);
 		}
@@ -98,8 +94,12 @@ public class AttackMenu extends JPanel implements ActionListener {
 		setBounds((int)(BoardState.BOARD.getWidth() * (0.5 - MY_WIDTH / 2)), (int)(BoardState.BOARD.getHeight() * (0.5 - MY_HEIGHT / 2)), (int)(BoardState.BOARD.getWidth() * MY_WIDTH), (int)(BoardState.BOARD.getHeight() * MY_HEIGHT));
 		//Labels
 		labels[0].setBounds(0, 0, getWidth() / 2, (int)(getHeight() * LABEL_HEIGHT));
-		labels[1].setBounds(0, labels[0].getWidth(), labels[0].getWidth(), labels[0].getHeight());
-		labels[0].setFont(new Font("Consolas", Font.BOLD, labels[0].getHeight() / 7));
+		labels[1].setBounds(labels[0].getWidth(), 0, labels[0].getWidth(), labels[0].getHeight());
+		labels[0].setText(attacker.fullStats());
+		labels[1].setText(defender.fullStats());
+		labels[0].setMargin(new Insets(5, 5, 5, 5));
+		labels[1].setMargin(new Insets(5, 5, 5, 5));
+		labels[0].setFont(new Font("Consolas", Font.PLAIN, labels[0].getHeight() / 5));
 		labels[1].setFont(labels[0].getFont());
 		//Buttons
 		buttonHolder.setBounds(0, (int)(getHeight() * (1 - BAR_HEIGHT)), getWidth(), (int)(getHeight() * BAR_HEIGHT));
@@ -108,8 +108,19 @@ public class AttackMenu extends JPanel implements ActionListener {
 		dice[0].setBounds(0, c - (int)(1.5 * getHeight() * DIE_HEIGHT), (int)(getHeight() * DIE_HEIGHT), (int)(getHeight() * DIE_HEIGHT));
 		dice[1].setBounds(0, dice[0].getBounds().y + dice[0].getHeight(), dice[0].getWidth(), dice[0].getHeight());
 		dice[2].setBounds(0, dice[1].getBounds().y + dice[1].getHeight(), dice[0].getWidth(), dice[0].getHeight());
+		dice[3].setBounds(getWidth() - dice[0].getWidth(), c - dice[0].getWidth(), dice[0].getWidth(), dice[0].getWidth());
+		dice[4].setBounds(dice[3].getX(), c, dice[0].getWidth(), dice[0].getWidth());
+		for(int i = 0; i < dice.length; i++){
+			dice[i].setFont(new Font("Consolas", Font.BOLD, (int)(0.8 * dice[0].getHeight())));
+			dice[i].setText(BoardState.dice[i] != 0 ? Integer.toString(BoardState.dice[i]) : "-");
+		}
+		//Troop counts
+		troopCount[0].setBounds(getWidth() / 2 - (int)(TROOP_HEIGHT * getHeight()), c - (int)(TROOP_HEIGHT * getHeight()) / 2, (int)(TROOP_HEIGHT * getHeight()), (int)(TROOP_HEIGHT * getHeight()));
+		troopCount[1].setBounds(getWidth() / 2 + troopCount[0].getWidth(), troopCount[0].getY(), troopCount[0].getWidth(), troopCount[0].getHeight());
+		troopCount[0].setFont(new Font("Consolas", Font.BOLD, (int)(0.8 * troopCount[0].getHeight())));
+		troopCount[1].setFont(new Font("Consolas", Font.BOLD, (int)(0.8 * troopCount[1].getHeight())));
+		troopCount[0].setText(Integer.toString(attacker.getTroops()));
+		troopCount[1].setText(Integer.toString(defender.getTroops()));
 	}
-
-	public void actionPerformed(ActionEvent arg0) {}
 
 }

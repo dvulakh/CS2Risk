@@ -369,6 +369,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	public int[] getImgDim(){return imgDim;}
 	public BufferedImage getImg(){return img;}
 	public JTextArea getInfoDisplay(){return infoDisplay;}
+	public AttackMenu getAttackMenu(){return attack;}
 	
 	/*** Save Game ***/
 	public boolean save() {
@@ -384,6 +385,10 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	}
 	public void mouseDragged(MouseEvent arg0) {}
 	public void mouseMoved(MouseEvent arg0) {
+		
+		//Mouse exists
+		if(getMousePosition() == null)
+			return;
 		
 		//Check players
 		if(getMousePosition().getX() < imgCorner[0]){
@@ -479,11 +484,16 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		
 		//Retreat
 		if(attack != null && e.getSource() == attack.buttons[0]){
+			attack.defender.getOccupation().battlesW++;
 			deleteAttackMenu();
 			setState(Frame.ICONIFIED);
 			setState(Frame.NORMAL);
-			return;
 		}
+		
+		//Attacks
+		for(int i = 1; i <= 3; i++)
+			if(attack != null && e.getSource() == attack.buttons[i])
+				BoardState.attack(attack.attacker, attack.defender, i);
 		
 	}
 	

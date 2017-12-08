@@ -12,10 +12,10 @@ public abstract class Player {
 	private int indx;
 	private int troop;
 	private int team;
-	private int battlesW;
-	private int battlesT;
-	private int invW;
-	private int invT;
+	public int troopsL;
+	public int troopsK;
+	public int battlesW;
+	public int battlesT;
 	
 	/*** Stat display ***/
 	private JPanel statPane;
@@ -46,10 +46,10 @@ public abstract class Player {
 		indx = i;
 		troop = 0;
 		team = -1;
+		troopsL = 0;
+		troopsK = 0;
 		battlesW = 0;
 		battlesT = 0;
-		invW = 0;
-		invT = 0;
 	}
 	
 	/*** Accessors and Mutators ***/
@@ -119,13 +119,13 @@ public abstract class Player {
 	public String fullStats(){
 		String stat = "";
 		stat += "player " + indx + ": " + name + " - " + getPlayerType() + "\n";
-		if(team > 0) stat += "team " + team + "\n";
 		stat += "basic statistics:\n";
-		stat += "\t" + expand("" + ter.size(), 4) + " occupied territories\n";
-		stat += "\t" + expand("" + troop, 4) + " total armies\n";
+		stat += "\t" + expand("" + ter.size(), 8) + "occupied territories\n";
+		stat += "\t" + expand("" + troop, 8) + "total armies\n";
 		stat += "win-loss record:\n";
-		stat += "\t" + (battlesT > 0 ? expand(battlesW + "/" + battlesT, 7) + " battles won = " + round((double)battlesW / battlesT, 3) * 100 + "%\n" : "no battles fought\n");
-		stat += "\t" + (invT > 0 ? expand(invW + "/" + invT, 7) + " invasions won = " + round((double)invW / invT, 3) * 100 + "%\n" : "no invasions completed");
+		stat += "\t" + expand("" + troopsL, 8) + "armies lost\n";
+		stat += "\t" + expand("" + troopsK, 8) + "armies defeated\n";
+		stat += "\t" + (battlesT > 0 ? expand(battlesW + "/" + battlesT, 8) + "battles won = " + (int)(round((double)battlesW / battlesT, 2) * 100) + "%\n" : "no battles fought");
 		return stat.toUpperCase();
 	}
 	private String expand(String i, int l){

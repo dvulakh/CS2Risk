@@ -76,6 +76,11 @@ public class Territory {
 			occupation.updateStatDisplay();
 		}
 		troops = t;
+		if(BoardState.BOARD != null && BoardState.BOARD.getGraphics() != null){
+			paint(BoardState.BOARD.getGraphics());
+			if(BoardState.BOARD.getAttackMenu() != null)
+				BoardState.BOARD.getAttackMenu().reset();
+		}
 	}
 	
 	/*** Statistics Display ***/

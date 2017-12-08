@@ -80,6 +80,49 @@ public abstract class BoardState {
 		}
 	}
 	
+	/*** Battle ***/
+	public static void attack(Territory a, Territory d, int t){
+		//Check for validity
+		if(t + 1 > a.getTroops() || t > 3)
+			return;
+		if(!a.isAdjacent(d) || a.getOccupation() == d.getOccupation())
+			return;
+		//Roll dice
+		dice = new int[5];
+		for(int i = 0; i < t; i++)
+			dice[i] = roll();
+		dice[3] = roll();
+		if(d.getTroops() > 1)
+			dice[4] = roll();
+		Arrays.sort(dice, 0, 3);
+		Arrays.sort(dice, 3, 5);
+		//Deal damage
+		for(int i = 0; i < 2; i++)
+			if(dice[2 - i] > 0 && dice[4 - i] > 0)
+				if(dice[2 - i] > dice[4 - i]){
+					d.getOccupation().troopsL++;
+					a.getOccupation().troopsK++;
+					if(d.getTroops() > 1)
+						d.occupy(d.getOccupation(), d.getTroops() - 1);
+					else {
+						d.occupy(a.getOccupation(), t); //FIX THIS!!!
+						a.occupy(a.getOccupation(), a.getTroops() - t);
+						a.getOccupation().battlesW++;
+					}
+				}
+				else{
+					d.getOccupation().troopsK++;
+					a.getOccupation().troopsL++;
+					a.occupy(a.getOccupation(), a.getTroops() - 1);
+				}
+		//Paint menu
+		if(BOARD.getAttackMenu() != null)
+			BOARD.getAttackMenu().reset();
+	}
+	private static int roll(){
+		return (int)(Math.random() * 1000000000) % 6 + 1;
+	}
+	
 	/*** Draw Board ***/
 	public static void paintAdjacent(Graphics g, Territory t){
 		if(!BOARD.showGraph)

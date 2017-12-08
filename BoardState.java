@@ -74,6 +74,8 @@ public abstract class BoardState {
 				phase = REINF;
 			}
 		}
+		if(phase == FORTIFY)
+			phase = REINF;
 		if(phase == REINF){
 			reinf = Math.max(pTurn().getOccupiedTerritories().size() / 3, 3) + pTurn().continentBonus();
 			pTurn().placeReinforcements();

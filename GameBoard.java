@@ -15,7 +15,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	public static final String NAME = "RISK: The Game of World Domination";
 	public static final String[] TERRITORY_NAMES = {"Alaska", "Alberta", "Central America", "Eastern United States", "Greenland", "Northwest Territory", "Ontario", "Quebec", "Western United States", "Argentina", "Brazil", "Peru", "Venezuela", "Great Britain", "Iceland", "Northern Europe", "Scandinavia", "Southern Europe", "Ukraine", "Western Europe", "Congo", "East Africa", "Egypt", "Madagascar", "North Africa", "South Africa", "Afghanistan", "China", "India", "Irkutsk", "Japan", "Kamchatka", "Middle East", "Mongolia", "Siam", "Siberia", "Ural", "Yakutsk", "Eastern Australia", "Indonesia", "New Guinea", "Western Australia"};
 	public static final int[] CONTINENT = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5};
-	public static final int[] CONTINENT_COUNT = {7, 4, 9, 6, 12, 4};
+	public static final int[] CONTINENT_COUNT = {9, 4, 7, 6, 12, 4};
 	public static final int[] CONTINENT_BONUS = {5, 2, 5, 3, 7, 2};
 	public static final String[] CONTINENT_NAME = {"North America", "South America", "Europe", "Africa", "Asia", "Australia"};
 	public static final double[][] LOCATIONS = {
@@ -476,6 +476,20 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 			flood = !flood;
 			paintImage(getGraphics());
 			BoardState.paint(getGraphics());
+		}
+		
+		//Next phase
+		if(e.getSource() == bottomButtons[3] && BoardState.pTurn() instanceof HumanPlayer && attack == null){
+			if(BoardState.phase == BoardState.ATTACK){
+				BoardState.phase++;
+				paintControls(getGraphics());
+				clicked = null;
+			}
+			else if(BoardState.phase == BoardState.FORTIFY){
+				BoardState.nxtTurn();
+				paintControls(getGraphics());
+				clicked = null;
+			}
 		}
 		
 		//Exit

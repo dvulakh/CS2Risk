@@ -484,7 +484,8 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		
 		//Retreat
 		if(attack != null && e.getSource() == attack.buttons[0]){
-			attack.defender.getOccupation().battlesW++;
+			if(attack.attacker.getOccupation() != attack.defender.getOccupation())
+				attack.defender.getOccupation().battlesW++;
 			deleteAttackMenu();
 			setState(Frame.ICONIFIED);
 			setState(Frame.NORMAL);

@@ -8,7 +8,6 @@ public class AttackMenu extends JPanel {
 	/*** AttackStats ***/
 	public Territory attacker;
 	public Territory defender;
-	private int[] losses;
 	
 	/*** Component proportions ***/
 	public static final double MY_HEIGHT = 1.0 / 3;
@@ -16,7 +15,6 @@ public class AttackMenu extends JPanel {
 	public static final double LABEL_HEIGHT = 0.25;
 	public static final double BAR_HEIGHT = 0.1;
 	public static final double DIE_HEIGHT = 0.5 / 3;
-	public static final double LOSS_HEIGHT = 0.05;
 	public static final double TROOP_HEIGHT = 0.25;
 	
 	/*** Components ***/
@@ -24,7 +22,6 @@ public class AttackMenu extends JPanel {
 	private JLabel[] dice;
 	private JTextArea[] labels;
 	private JLabel[] troopCount;
-	private JLabel[] lossDis;
 	private JPanel buttonHolder;
 	public JButton[] buttons;
 	
@@ -35,7 +32,6 @@ public class AttackMenu extends JPanel {
 		defender = d;
 		attacker.getOccupation().battlesT++;
 		defender.getOccupation().battlesT++;
-		losses = new int[2];
 		BoardState.dice = new int[5];
 		//Initialize Components
 		setLayout(null);
@@ -44,7 +40,6 @@ public class AttackMenu extends JPanel {
 		dice = new JLabel[5];
 		labels = new JTextArea[2];
 		troopCount = new JLabel[2];
-		lossDis = new JLabel[4];
 		buttonHolder = new JPanel(new GridLayout(0, buttonNames.length));
 		buttonHolder.setBorder(BorderFactory.createLineBorder(GameBoard.FONT));
 		buttons = new JButton[buttonNames.length];
@@ -71,12 +66,6 @@ public class AttackMenu extends JPanel {
 			troopCount[i].setBackground(GameBoard.MAIN);
 			add(troopCount[i]);
 		}
-		for(int i = 0; i < 4; i++){
-			lossDis[i] = new JLabel();
-			lossDis[i].setBackground(GameBoard.MAIN);
-			lossDis[i].setForeground(GameBoard.FONT);
-			add(lossDis[i]);
-		}
 		for(int i = 0; i < buttons.length; i++){
 			buttons[i] = new myButton(buttonNames[i], GameBoard.MAIN, GameBoard.MOUSE);
 			buttons[i].setForeground(GameBoard.FONT);
@@ -87,7 +76,6 @@ public class AttackMenu extends JPanel {
 		}
 		add(buttonHolder);
 		setVisible(true);
-		//reset();
 	}
 	
 	public void reset(){

@@ -77,6 +77,7 @@ public class AttackMenu extends JPanel {
 		add(buttonHolder);
 	}
 	
+	public int c(){return (labels[0].getHeight() + buttonHolder.getBounds().y) / 2;}
 	public void reset(){
 		//This
 		setBounds((int)(BoardState.BOARD.getWidth() * (0.5 - MY_WIDTH / 2)), (int)(BoardState.BOARD.getHeight() * (0.5 - MY_HEIGHT / 2)), (int)(BoardState.BOARD.getWidth() * MY_WIDTH), (int)(BoardState.BOARD.getHeight() * MY_HEIGHT));
@@ -94,12 +95,11 @@ public class AttackMenu extends JPanel {
 		//Buttons
 		buttonHolder.setBounds(0, (int)(getHeight() * (1 - BAR_HEIGHT)), getWidth(), (int)(getHeight() * BAR_HEIGHT));
 		//Dice
-		int c = (labels[0].getHeight() + buttonHolder.getBounds().y) / 2;
-		dice[0].setBounds(0, c + (int)(0.5 * getHeight() * DIE_HEIGHT), (int)(getHeight() * DIE_HEIGHT), (int)(getHeight() * DIE_HEIGHT));
+		dice[0].setBounds(0, c() + (int)(0.5 * getHeight() * DIE_HEIGHT), (int)(getHeight() * DIE_HEIGHT), (int)(getHeight() * DIE_HEIGHT));
 		dice[1].setBounds(0, dice[0].getBounds().y - dice[0].getHeight(), dice[0].getWidth(), dice[0].getHeight());
 		dice[2].setBounds(0, dice[1].getBounds().y - dice[1].getHeight(), dice[0].getWidth(), dice[0].getHeight());
-		dice[3].setBounds(getWidth() - dice[0].getWidth(), c, dice[0].getWidth(), dice[0].getWidth());
-		dice[4].setBounds(dice[3].getX(), c - dice[0].getWidth(), dice[0].getWidth(), dice[0].getWidth());
+		dice[3].setBounds(getWidth() - dice[0].getWidth(), c(), dice[0].getWidth(), dice[0].getWidth());
+		dice[4].setBounds(dice[3].getX(), c() - dice[0].getWidth(), dice[0].getWidth(), dice[0].getWidth());
 		for(int i = 0; i < dice.length; i++){
 			dice[i].setFont(new Font("Consolas", Font.BOLD, (int)(0.8 * dice[0].getHeight())));
 			dice[i].setText(BoardState.dice[i] != 0 ? Integer.toString(BoardState.dice[i]) : "-");
@@ -107,7 +107,7 @@ public class AttackMenu extends JPanel {
 		//Troop counts
 		troopCount[0].setForeground(attacker.getOccupation().getColor());
 		troopCount[1].setForeground(defender.getOccupation().getColor());
-		troopCount[0].setBounds(getWidth() / 2 - (int)(1.5 * TROOP_HEIGHT * getHeight()), c - (int)(TROOP_HEIGHT * getHeight()) / 2, (int)(TROOP_HEIGHT * getHeight()), (int)(TROOP_HEIGHT * getHeight()));
+		troopCount[0].setBounds(getWidth() / 2 - (int)(1.5 * TROOP_HEIGHT * getHeight()), c() - (int)(TROOP_HEIGHT * getHeight()) / 2, (int)(TROOP_HEIGHT * getHeight()), (int)(TROOP_HEIGHT * getHeight()));
 		troopCount[1].setBounds(getWidth() / 2 + troopCount[0].getWidth() / 2, troopCount[0].getY(), troopCount[0].getWidth(), troopCount[0].getHeight());
 		troopCount[0].setFont(new Font("Consolas", Font.BOLD, (int)(0.8 * troopCount[0].getHeight())));
 		troopCount[1].setFont(new Font("Consolas", Font.BOLD, (int)(0.8 * troopCount[1].getHeight())));

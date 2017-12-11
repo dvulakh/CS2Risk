@@ -23,7 +23,7 @@ public class MoveMenu extends JPanel {
 	/*** Component proportions ***/
 	public static final double MY_HEIGHT = 0.2;
 	public static final double MY_WIDTH = 0.25;
-	public static final double LABEL_HEIGHT = 0.1;
+	public static final double LABEL_HEIGHT = 0.10;
 	public static final double BAR_HEIGHT = 0.15;
 	public static final double TROOP_HEIGHT = 0.25;
 	public static final double SLIDER_WIDTH = 0.8;
@@ -56,6 +56,7 @@ public class MoveMenu extends JPanel {
 		for(int i = 0; i < 2; i++){
 			labels[i] = new JTextArea();
 			labels[i].setOpaque(false);
+			labels[i].setEditable(false);
 			add(labels[i]);
 		}
 		labels[0].setForeground(from.getOccupation().getColor());
@@ -88,7 +89,7 @@ public class MoveMenu extends JPanel {
 	
 	public void reset(){
 		//This
-		setBounds((int)(BoardState.BOARD.getWidth() * (0.5 - MY_WIDTH / 2)), (int)(BoardState.BOARD.getHeight() * (0.5 - MY_HEIGHT / 2)), (int)(BoardState.BOARD.getWidth() * MY_WIDTH), (int)(BoardState.BOARD.getHeight() * MY_HEIGHT));
+		setBounds((int)(BoardState.BOARD.getWidth() * (0.5 - MY_WIDTH / 2)), BoardState.BOARD.getAttackMenu() == null ? (int)(BoardState.BOARD.getHeight() * (0.5 - MY_HEIGHT / 2)) : (int)(BoardState.BOARD.getAttackMenu().c() + BoardState.BOARD.getAttackMenu().getY() - BoardState.BOARD.getHeight() * MY_HEIGHT * 0.5), (int)(BoardState.BOARD.getWidth() * MY_WIDTH), (int)(BoardState.BOARD.getHeight() * MY_HEIGHT));
 		//Labels
 		labels[0].setForeground(from.getOccupation().getColor());
 		labels[1].setForeground(to.getOccupation().getColor());

@@ -61,7 +61,6 @@ public class HumanPlayer extends Player {
 	public void troopPrompt(int d){
 		if(BoardState.BOARD.getAttackMenu() != null)
 			BoardState.BOARD.setMoveMenu(new MoveMenu(BoardState.BOARD.getAttackMenu().attacker, BoardState.BOARD.getAttackMenu().defender, d));
-		BoardState.BOARD.getMoveMenu().reset();
 	}
 	public void maneuvers() {
 		if(attacker == null){

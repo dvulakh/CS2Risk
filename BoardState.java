@@ -37,7 +37,7 @@ public abstract class BoardState {
 		startTroops = 8;
 		players[0] = new HumanPlayer(1, "Alice", Color.RED);
 		players[1] = new HumanPlayer(2, "Bob", Color.GREEN);
-		players[2] = new HumanPlayer(2, "Cate", Color.MAGENTA);
+		players[2] = new HumanPlayer(3, "Cate", Color.MAGENTA);
 		players[3] = new HumanPlayer(4, "Daniel", Color.CYAN);
 		players[4] = new HumanPlayer(5, "Eli", Color.BLUE);
 		players[5] = new HumanPlayer(6, "Falstaff", Color.ORANGE);
@@ -124,7 +124,7 @@ public abstract class BoardState {
 		if(BOARD.getAttackMenu() != null)
 			BOARD.getAttackMenu().reset();
 	}
-	private static int roll(){
+	public static int roll(){
 		return (int)(Math.random() * Integer.MAX_VALUE) % 6 + 1;
 	}
 	

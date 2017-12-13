@@ -89,7 +89,7 @@ public class MoveMenu extends JPanel {
 	
 	public void reset(){
 		//This
-		setBounds((int)(BoardState.BOARD.getWidth() * (0.5 - MY_WIDTH / 2)), BoardState.BOARD.getAttackMenu() == null ? (int)(BoardState.BOARD.getHeight() * (0.5 - MY_HEIGHT / 2)) : (int)(BoardState.BOARD.getAttackMenu().c() + BoardState.BOARD.getAttackMenu().getY() - BoardState.BOARD.getHeight() * MY_HEIGHT * 0.5), (int)(BoardState.BOARD.getWidth() * MY_WIDTH), (int)(BoardState.BOARD.getHeight() * MY_HEIGHT));
+		setBounds((int)(BoardState.BOARD.getWidth() * (0.5 - MY_WIDTH / 2)), (int)(BoardState.BOARD.getHeight() * (0.5 - MY_HEIGHT / 2)), (int)(BoardState.BOARD.getWidth() * MY_WIDTH), (int)(BoardState.BOARD.getHeight() * MY_HEIGHT));
 		//Labels
 		labels[0].setForeground(from.getOccupation().getColor());
 		labels[1].setForeground(to.getOccupation().getColor());

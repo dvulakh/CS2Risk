@@ -538,7 +538,7 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 		//Moves
 		if(move != null && e.getSource() == move.buttons[0]){
 			deleteMoveMenu();
-			if(BoardState.phase == BoardState.FORTIFY)
+			if(BoardState.phase == BoardState.FORTIFY && !BoardState.supplyLine)
 				BoardState.nxtTurn();
 			if(attack != null)
 				actionPerformed(new ActionEvent(attack.buttons[0], 0, ""));

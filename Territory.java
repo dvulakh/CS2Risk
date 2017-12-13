@@ -61,7 +61,24 @@ public class Territory {
 	
 	/*** Adjacency ***/
 	public boolean isAdjacent(Territory t){	return (GameBoard.ADJACENCY[indx] & (long)1 << t.indx) != (long)0; }
-	public boolean canReach(Territory t){return isAdjacent(t);}
+	public boolean canReach(Territory t){
+		if(!BoardState.supplyLine)
+			return isAdjacent(t);
+		LinkedList<Territory> q = new LinkedList<Territory>();
+		boolean vis[] = new boolean[BoardState.territories.length];
+		q.addLast(this);
+		while(!q.isEmpty()){
+			for(Territory t2: BoardState.territories)
+				if(t2.getOccupation() == getOccupation() && q.getFirst().isAdjacent(t2) && !vis[t2.indx]){
+					vis[t2.indx] = true;
+					q.addLast(t2);
+				}
+			if(q.getFirst() == t)
+				return true;
+			q.removeFirst();
+		}
+		return false;
+	}
 	
 	/*** Occupy territory with t troops of player p ***/
 	public void occupy(Player p, int t){

@@ -5,6 +5,7 @@ import java.util.*;
 public abstract class BoardState {
 	
 	/*** Game Information ***/
+	//Phases
 	public static final String[] PHASE_NAMES = {"Select a Territory", "Reinforce", "Reinforce", "Attack", "Fortify"};
 	public static final int CHOOSE_TERR = 0;
 	public static final int INITIAL_REINF = 1;
@@ -12,6 +13,7 @@ public abstract class BoardState {
 	public static final int ATTACK = 3;
 	public static final int FORTIFY = 4;
 	public static final int MAX_PLAYER = 6;
+	//Board
 	public static Territory[] territories;
 	public static Player[] players;
 	public static GameBoard BOARD;
@@ -21,6 +23,8 @@ public abstract class BoardState {
 	public static int phase;
 	public static int[] dice;
 	public static Player pTurn(){return players[turn % players.length];}
+	//Game mode
+	public static boolean supplyLine;
 	
 	/*** Set-Up ***/
 	public static void startGame(){
@@ -35,6 +39,7 @@ public abstract class BoardState {
 		//Player test
 		players = new Player[6];
 		startTroops = 8;
+		supplyLine = true;
 		players[0] = new HumanPlayer(1, "Alice", Color.RED);
 		players[1] = new HumanPlayer(2, "Bob", Color.GREEN);
 		players[2] = new HumanPlayer(2, "Cate", Color.MAGENTA);

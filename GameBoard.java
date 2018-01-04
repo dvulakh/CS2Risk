@@ -369,8 +369,10 @@ public class GameBoard extends JFrame implements MouseListener, MouseMotionListe
 	}
 	public void setMoveMenu(MoveMenu m){
 		move = m;
-		if(attack != null)
+		if(attack != null){
+			attack.reset();
 			remove(attack);
+		}
 		add(move);
 		move.reset();
 	}

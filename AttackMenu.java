@@ -115,8 +115,6 @@ public class AttackMenu extends JPanel {
 		troopCount[1].setText(Integer.toString(defender.getTroops()));
 		//Repaint
 		repaint();
-		if(BoardState.BOARD.getMoveMenu() != null)
-			BoardState.BOARD.getMoveMenu().reset();
 	}
 
 }

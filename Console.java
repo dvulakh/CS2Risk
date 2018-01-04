@@ -110,7 +110,6 @@ public class Console extends JPanel {
 							BoardState.attack(t,  t2, Math.min(t.getTroops() - init + tr, 3));
 						}
 						if(t.getOccupation() == t2.getOccupation()){
-							t.getOccupation().battlesW++;
 							display.append("invasion successful\n".toUpperCase());
 							int left = t.getTroops() - init + tr;
 							t.occupy(t.getOccupation(), t.getTroops() - left);
@@ -119,7 +118,6 @@ public class Console extends JPanel {
 							t2.conquestPaint(BoardState.BOARD.getGraphics());
 						}
 						else{
-							t2.getOccupation().battlesT++;
 							display.append("invasion failed\n".toUpperCase());
 						}
 					}
